@@ -71,11 +71,12 @@ namespace ChatServer
 
         static void RebroadcastMessage(Message message)
         {
+            UICONTROLLER.Display(message);
+
             foreach (var user in USERS)
             {
                 var recipient = USERS.Where((x) => { return x.Name.Equals(user.Name); }).First();
                 MESSAGE_HANDLER.Send(recipient, message);
-                UICONTROLLER.Display(message);
             }
         }
 

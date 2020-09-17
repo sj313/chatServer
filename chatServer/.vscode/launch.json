@@ -31,13 +31,26 @@
       "stopAtEntry": false
     },
     {
-      "name": ".NET Core Launch (console) CLIENT+SERVER",
+      "name": ".NET Core Launch (console) SERVER+CLIENT(1)",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
       "program": "${workspaceFolder}/src/bin/Debug/netcoreapp3.1/ChatServer.dll",
-      "args": [],
+      "args": ["server", "client", "1"],
+      "cwd": "${workspaceFolder}/src/",
+      // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": ".NET Core Launch (console) SERVER+CLIENT(3)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      // If you have changed target frameworks, make sure to update the program path.
+      "program": "${workspaceFolder}/src/bin/Debug/netcoreapp3.1/ChatServer.dll",
+      "args": ["server", "client", "3"],
       "cwd": "${workspaceFolder}/src/",
       // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
       "console": "internalConsole",

@@ -9,55 +9,57 @@ namespace ChatServer
     {
         public static void Main(string[] args)
         {
-            if (args.Length > 0)
+            int numberOfClients;
+            if (args.Length == 1 && args[0].Equals("server"))
             {
-                if (args[0].Equals("server"))
-                {
-                    Server.StartServer();
-                    return;
-                }
-                else if (args[0].Equals("client"))
-                {
-                    int temp;
-                    var numberOfClients = args.Length == 2 ? Int32.TryParse(args[1], out temp) ? temp : 1 : 1;
+                Server.StartServer();
+                return;
+            }
+            else if (args.Length == 1 && args[0].Equals("client"))
+            {
+                Client.StartClient();
+                return;
+            }
+            else if (args.Length == 3 && args[0].Equals("server") && args[1].Equals("client") && int.TryParse(args[2], out numberOfClients))
+            {
+                StartNClients(numberOfClients);
+                Server.StartServer();
+                return;
+            }
+            else if (args.Length == 2 && args[0].Equals("client") && int.TryParse(args[1], out numberOfClients))
+            {
+                StartNClients(numberOfClients);
+                Thread.Sleep(Timeout.Infinite);
+            }
+            else
+            {
+                ReportError();
+            }
+        }
 
-                    if (numberOfClients > 0)
-                    {
-                        var newClientProcess = new Process
-                        {
-                            StartInfo = new ProcessStartInfo
-                            {
-                                FileName = Directory.GetCurrentDirectory() + "/bin/Debug/netcoreapp3.1/ChatServer.exe",
-                                Arguments = $"{args[0]} {numberOfClients - 1}",
-                                UseShellExecute = true
-                            }
-                        };
-                        newClientProcess.Start();
-                        Client.StartClient();
-                    }
-                    return;
-                }
-            } else {
+        private static void ReportError()
+        {
+            throw new Exception("Usage: 'server? client? <numberOfClients>?' - E.G: 'server client 1', or 'server', or 'client', or 'client'");
+        }
 
+        private static Process[] StartNClients(int N)
+        {
+            var returnArray = new Process[N];
+            for (int i = 0; i < N; i++)
+            {
                 var newClientProcess = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = Directory.GetCurrentDirectory() + "/bin/Debug/netcoreapp3.1/ChatServer.exe",
-                        Arguments = $"client",
+                        Arguments = "client",
                         UseShellExecute = true
                     }
                 };
                 newClientProcess.Start();
-                Server.StartServer();
+                returnArray[i] = newClientProcess;
             }
-
-            ReportError();
-        }
-
-        private static void ReportError()
-        {
-            throw new Exception("You have to supply the argument 'client <number>' or 'server', dumbass");
+            return returnArray;
         }
     }
 }

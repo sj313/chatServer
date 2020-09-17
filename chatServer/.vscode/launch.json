@@ -10,9 +10,9 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer/bin/Debug/netcoreapp3.1/ChatServer.dll",
+      "program": "${workspaceFolder}/src/bin/Debug/netcoreapp3.1/ChatServer.dll",
       "args": ["server"],
-      "cwd": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer",
+      "cwd": "${workspaceFolder}/src/",
       // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
       "console": "internalConsole",
       "stopAtEntry": false
@@ -23,9 +23,9 @@
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer/bin/Debug/netcoreapp3.1/ChatServer.dll",
+      "program": "${workspaceFolder}/src/bin/Debug/netcoreapp3.1/ChatServer.dll",
       "args": ["client", "3"],
-      "cwd": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer",
+      "cwd": "${workspaceFolder}/src/",
       // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
       "console": "externalTerminal",
       "stopAtEntry": false

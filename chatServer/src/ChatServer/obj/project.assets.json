@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\USER-Admin\\Desktop\\New folder\\chatServer\\src\\ChatServer\\ChatServer.csproj",
+      "projectUniqueName": "C:\\Users\\USER-Admin\\Desktop\\chat thing\\chatServer\\chatServer\\chatServer\\src\\ChatServer\\ChatServer.csproj",
       "projectName": "ChatServer",
-      "projectPath": "C:\\Users\\USER-Admin\\Desktop\\New folder\\chatServer\\src\\ChatServer\\ChatServer.csproj",
+      "projectPath": "C:\\Users\\USER-Admin\\Desktop\\chat thing\\chatServer\\chatServer\\chatServer\\src\\ChatServer\\ChatServer.csproj",
       "packagesPath": "C:\\Users\\USER-Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\USER-Admin\\Desktop\\New folder\\chatServer\\src\\ChatServer\\obj\\",
+      "outputPath": "C:\\Users\\USER-Admin\\Desktop\\chat thing\\chatServer\\chatServer\\chatServer\\src\\ChatServer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

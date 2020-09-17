@@ -10,8 +10,8 @@ namespace ChatServer
 {
     public class Server
     {
-        private static readonly Int32 PORT = 10;
-        private static readonly IPAddress LOCAL_ADDRESS = IPAddress.Parse("192.168.187.163");
+        private static readonly Int32 PORT = 9;
+        private static readonly IPAddress LOCAL_ADDRESS = IPAddress.Any;
 
         private static readonly TcpListener LISTENER = new TcpListener(LOCAL_ADDRESS, PORT);
         private static readonly ConcurrentBag<User> USERS = new ConcurrentBag<User>();
@@ -22,9 +22,11 @@ namespace ChatServer
         public static readonly string SERVER_NAME = "<SuperBot 5000>";
         public static readonly User SERVER_USER = new User(SERVER_NAME);
 
-        static void Main(string[] args)
+        public static void StartServer()
         {
             UICONTROLLER.Display += (x) => { System.Console.WriteLine($"<{x.Author.Name}>: {x._message}"); };
+            //System.Console.WriteLine(Dns.GetHostName());
+
 
             Task rebroadcasting = new Task(() => { MESSAGE_HANDLER.OnMessageRecieved(RebroadcastMessage); });
             rebroadcasting.Start();
@@ -45,7 +47,7 @@ namespace ChatServer
         {
             try
             {
-                LISTENER.Start();
+                LISTENER.Start(1000);
                 UICONTROLLER.Display(new Message(SERVER_USER, "Starting up..."));
                 while (true)
                 {
@@ -69,11 +71,11 @@ namespace ChatServer
 
         static void RebroadcastMessage(Message message)
         {
-            UICONTROLLER.Display(message);
             foreach (var user in USERS)
             {
                 var recipient = USERS.Where((x) => { return x.Name.Equals(user.Name); }).First();
                 MESSAGE_HANDLER.Send(recipient, message);
+                UICONTROLLER.Display(message);
             }
         }
 

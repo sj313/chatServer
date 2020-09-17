@@ -5,16 +5,29 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (console)",
+      "name": ".NET Core Launch (console) SERVER",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
       // If you have changed target frameworks, make sure to update the program path.
-      "program": "${workspaceFolder}/src/ChatServer/bin/Debug/netcoreapp3.1/ChatServer.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}/src/ChatServer",
+      "program": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer/bin/Debug/netcoreapp3.1/ChatServer.dll",
+      "args": ["server"],
+      "cwd": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer",
       // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-      "console": "integratedTerminal",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": ".NET Core Launch (console) CLIENT",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      // If you have changed target frameworks, make sure to update the program path.
+      "program": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer/bin/Debug/netcoreapp3.1/ChatServer.dll",
+      "args": ["client", "3"],
+      "cwd": "${workspaceFolder}/chatServer/chatServer/chatServer/src/ChatServer",
+      // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+      "console": "externalTerminal",
       "stopAtEntry": false
     },
     {

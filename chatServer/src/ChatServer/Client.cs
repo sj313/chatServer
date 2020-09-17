@@ -8,14 +8,14 @@ namespace ChatServer
 {
     public class Client
     {
-        private static readonly Int32 PORT = 10;
-        private static readonly IPAddress HOSTNAME = IPAddress.Parse("192.168.187.163");
+        private const Int32 PORT = 9;
+        private static readonly string HOSTNAME = "UK-PF1P3XRA";
         private User USER = new User(new TcpClient());
         private MessageHandler MESSAGE_HANDLER = new MessageHandler();
 
         private UIController UICONTROLLER = new UIController();
 
-        public static void Main(string[] args)
+        public static void StartClient()
         {
             Client thisClient = new Client();
             thisClient.UICONTROLLER.Display += (x) =>

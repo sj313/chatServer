@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "eLkiHw/EurfL0hrFOM1LIkcOrMc3wuAyxCCE7BZupeYhON/MieOMWR9OW2ZyK6gv8OYaTFkY6UWKcx95U1WDag==",
+  "dgSpecHash": "HbLAkY6TcVjwsUmOeg9E53Z6j3ZyZTKCm9eCE0O+ve58SS5ycZ0yQt81p9T2QqNL6mFN+q44rVenKbNAV/0WLw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\USER-Admin\\Desktop\\New folder\\chatServer\\src\\ChatServer\\ChatServer.csproj",
+  "projectFilePath": "C:\\Users\\USER-Admin\\Desktop\\chat thing\\chatServer\\chatServer\\chatServer\\src\\ChatServer\\ChatServer.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 namespace ChatServer
 {
     public class Startup
@@ -36,6 +37,19 @@ namespace ChatServer
                     }
                     return;
                 }
+            } else {
+
+                var newClientProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = Directory.GetCurrentDirectory() + "/bin/Debug/netcoreapp3.1/ChatServer.exe",
+                        Arguments = $"client",
+                        UseShellExecute = true
+                    }
+                };
+                newClientProcess.Start();
+                Server.StartServer();
             }
 
             ReportError();

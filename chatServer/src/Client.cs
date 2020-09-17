@@ -9,7 +9,7 @@ namespace ChatServer
     public class Client
     {
         private const Int32 PORT = 9;
-        private static readonly string HOSTNAME = "UK-PF1P3XRA";
+        private static readonly string HOSTNAME = Dns.GetHostName();
         private User USER = new User(new TcpClient());
         private MessageHandler MESSAGE_HANDLER = new MessageHandler();
 

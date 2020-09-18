@@ -7,5 +7,6 @@
 */bin
 */obj
 resources/*
+!resources/protos
 # Local History for Visual Studio Code
 .history/

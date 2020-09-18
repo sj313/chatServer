@@ -5,14 +5,13 @@ using System.Security.Cryptography;
 
 namespace ChatServer.Encryption
 {
-
-    abstract class RSA
+    public abstract class RSA
     {
-            private static byte[] SignAndEncryptMessage(RSAParameters privKey, IEnumerable<byte> message, IEnumerable<byte> password) {
-            var rsa = new RSACryptoServiceProvider();
-            rsa.ImportParameters(privKey);
+        public static byte[] SignAndEncryptMessage(RSAParameters privKey, IEnumerable<byte> message, IEnumerable<byte> password) {
+            var RSA = new RSACryptoServiceProvider();
+            RSA.ImportParameters(privKey);
 
-            var signature = rsa.SignData(message.ToArray(), SHA256.Create());
+            var signature = RSA.SignData(message.ToArray(), SHA256.Create());
 
             var combined = new List<byte>();
             combined.AddRange(signature);
@@ -22,17 +21,17 @@ namespace ChatServer.Encryption
         }
         public static RSAParameters GetStoredEncryptedKeyPair(string path, IEnumerable<byte> password, bool includePrivateParameters)
         {
-            var rsa = new RSACryptoServiceProvider();
+            var RSA = new RSACryptoServiceProvider();
 
-            rsa.ImportCspBlob(AES.Decrypt(File.ReadAllBytes(path), password));
+            RSA.ImportCspBlob(AES.Decrypt(File.ReadAllBytes(path), password));
 
-            return rsa.ExportParameters(includePrivateParameters);
+            return RSA.ExportParameters(includePrivateParameters);
         }
 
-        static void GenerateAndStoreNewEncryptedKeyPair(string path, IEnumerable<byte> password)
+        public static void GenerateAndStoreNewEncryptedKeyPair(string path, IEnumerable<byte> password)
         {
-            var rsa = new RSACryptoServiceProvider(2048);
-            var keyBlob = rsa.ExportCspBlob(true);
+            var RSA = new RSACryptoServiceProvider(2048);
+            var keyBlob = RSA.ExportCspBlob(true);
             File.WriteAllBytes(path, AES.Encrypt(keyBlob, password));
         }
     }

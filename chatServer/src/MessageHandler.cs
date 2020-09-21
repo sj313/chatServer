@@ -1,13 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
-
-using System.Net;
-using System.Net.Sockets;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading;
+using Google.Protobuf;
+using System.Security.Cryptography;
+using ChatServer.Transmisisons;
+using System.Text;
 
 namespace ChatServer
 {
@@ -18,7 +17,11 @@ namespace ChatServer
 
         public void Send(User recipient, Message message)
         {
-            Send(recipient.getStream(), message.Serialize());
+            var tempKey = new RSACryptoServiceProvider(2048);
+            var password = Encoding.UTF8.GetBytes("Password");
+            var transmission = new Transmission(tempKey.ExportRSAPrivateKey(), message.Serialize());
+            var encryptedTransmission = new EncryptedTransmission(transmission, password);
+            Send(recipient.getStream(), encryptedTransmission.ToByteArray());
         }
 
         void Send(NetworkStream stream, byte[] implicitBytes)
@@ -30,14 +33,22 @@ namespace ChatServer
 
         public Message Recieve(NetworkStream stream)
         {
-            byte[] dataLength = new byte[8];
-            stream.Read(dataLength, 0, dataLength.Length);
+            byte[] messageLength = new byte[8];
+            stream.Read(messageLength, 0, 8);
 
-            byte[] data = new byte[dataLength.asInt64()];
+            byte[] data = new byte[messageLength.asInt64()];
             stream.Read(data, 0, data.Length);
 
+            var password = Encoding.UTF8.GetBytes("Password");
+            var encryptedParser = new MessageParser<EncryptedTransmission>(() => new EncryptedTransmission());
+            var encryptedTransmission = encryptedParser.ParseFrom(data);
+            var parser = new MessageParser<Transmission>(() => new Transmission());
+            var transmission = parser.ParseFrom(encryptedTransmission.Decrypt(password));
+
+            var message = transmission.GetData();
+
             //should check if message is actually completely recieved 
-            return Message.Deserialize(data);
+            return Message.Deserialize(message);
         }
 
         public void RecieveFrom(NetworkStream stream)

@@ -14,14 +14,14 @@ namespace ChatServer.Encryption
     
         public static byte[] Encrypt(IEnumerable<byte> plaintext, IEnumerable<byte> password)
         {
-            RijndaelManaged AES = Setup(KEY_SIZE, BLOCK_SIZE, ITERATIONS, SALT, SHA256.Create().ComputeHash(password.ToArray()));
-            AES.GenerateIV();
+            RijndaelManaged aes = Setup(KEY_SIZE, BLOCK_SIZE, ITERATIONS, SALT, SHA256.Create().ComputeHash(password.ToArray()));
+            aes.GenerateIV();
 
             using (var memoryStream = new MemoryStream())
             {
-                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, AES.CreateEncryptor(), CryptoStreamMode.Write))
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
                 {
-                    memoryStream.Write(AES.IV);
+                    memoryStream.Write(aes.IV);
                     cryptoStream.Write(plaintext.ToArray(), 0, plaintext.Count());
                 }
                 return memoryStream.ToArray();
@@ -30,12 +30,12 @@ namespace ChatServer.Encryption
 
         public static byte[] Decrypt(IEnumerable<byte> ciphertext, IEnumerable<byte> password)
         {
-            RijndaelManaged AES = Setup(KEY_SIZE, BLOCK_SIZE, ITERATIONS, SALT, SHA256.Create().ComputeHash(password.ToArray()));
-            AES.IV = ciphertext.Take(16).ToArray();
+            RijndaelManaged aes = Setup(KEY_SIZE, BLOCK_SIZE, ITERATIONS, SALT, SHA256.Create().ComputeHash(password.ToArray()));
+            aes.IV = ciphertext.Take(16).ToArray();
 
             using (var memoryStream = new MemoryStream())
             {
-                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, AES.CreateDecryptor(), CryptoStreamMode.Write))
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
                 {
                     cryptoStream.Write(ciphertext.Skip(16).ToArray(), 0, ciphertext.Count() - 16);
                 }
@@ -45,15 +45,15 @@ namespace ChatServer.Encryption
 
         private static RijndaelManaged Setup(int keySize, int BlockSize, int iterations, byte[] salt, byte[] passwordHash)
         {
-            RijndaelManaged AES = new RijndaelManaged();
+            RijndaelManaged aes = new RijndaelManaged();
 
-            AES.KeySize = keySize;
-            AES.BlockSize = BlockSize;
-            AES.Key = new Rfc2898DeriveBytes(passwordHash, salt, iterations).GetBytes(keySize/8);
+            aes.KeySize = keySize;
+            aes.BlockSize = BlockSize;
+            aes.Key = new Rfc2898DeriveBytes(passwordHash, salt, iterations).GetBytes(keySize/8);
             // Defaults
-            // AES.Mode = CipherMode.CBC;
-            // AES.Padding = PaddingMode.PKCS7;
-            return AES;
+            // aes.Mode = CipherMode.CBC;
+            // aes.Padding = PaddingMode.PKCS7;
+            return aes;
         }
     }
 }

@@ -1,7 +1,7 @@
 {
   "protoc": {
     "path": "./resources/packages/google.protobuf.tools/3.13.0/tools/windows_x64/protoc.exe",
-    "compile_on_save": true,
-    "options": ["--proto_path=./resources/protos", "--csharp_out=./src"]
+    "compile_on_save": false,
+    "options": ["--proto_path=./resources/proto", "--csharp_out=./src/proto"]
   }
 }

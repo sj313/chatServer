@@ -27,7 +27,6 @@ namespace ChatServer
             UICONTROLLER.Display += (x) => { System.Console.WriteLine($"<{x.Author.Name}>: {x._message}"); };
             //System.Console.WriteLine(Dns.GetHostName());
 
-
             Task rebroadcasting = new Task(() => { MESSAGE_HANDLER.OnMessageRecieved(RebroadcastMessage); });
             rebroadcasting.Start();
 
@@ -84,20 +83,20 @@ namespace ChatServer
         {
             User newUser = new User(newClient);
 
-            string username = string.Empty;
+            string username = null;
 
-            MESSAGE_HANDLER.Send(newUser, new Message(SERVER_USER, "Sup, welcome to this awesome chat server!\n"));
+            MESSAGE_HANDLER.Send(newUser, new Message(SERVER_USER, "Sup, welcome to this awesome chat server!"));
             do
             {
-                if (!username.Equals(string.Empty))
+                if (username != null)
                 {
-                    MESSAGE_HANDLER.Send(newUser, new Message(SERVER_USER, "That Username is taken!"));
+                    MESSAGE_HANDLER.Send(newUser, new Message(SERVER_USER, "That cannot be used"));
                 }
                 MESSAGE_HANDLER.Send(newUser, new Message(SERVER_USER, "Enter a Username: "));
 
                 Message inputMessage = MESSAGE_HANDLER.Recieve(newUser.getStream());
                 username = inputMessage._message;
-            } while ((USERS.Where((x) => { return x.Name.Equals(username); }).Count() > 0));
+            } while ((USERS.Where((x) => { return x.Name.Equals(username); }).Count() > 0) || String.IsNullOrEmpty(username));
 
             newUser.Name = username;
             MESSAGE_HANDLER.Send(newUser, new Message(SERVER_USER, $"Your username is: '{username}'"));

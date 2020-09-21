@@ -13,7 +13,6 @@ namespace ChatServer
 {
     public class MessageHandler
     {
-        private static readonly Int32 BUFFER_SIZE = 1024;
         private readonly ConcurrentQueue<Message> MessagesRecieved = new ConcurrentQueue<Message>();
         private readonly ManualResetEvent messagesRecievedSignal = new ManualResetEvent(false);
 
@@ -24,18 +23,18 @@ namespace ChatServer
 
         void Send(NetworkStream stream, byte[] implicitBytes)
         {
-            stream.Write(implicitBytes, 0, implicitBytes.Length);
+            var data = implicitBytes.Length.asBtyes().Concat(implicitBytes).ToArray();
 
-            // if (implicitBytes.Length > BUFFER_SIZE)
-            // {
-            //     Send(stream, implicitBytes.Skip(BUFFER_SIZE).ToArray());
-            // }
+            stream.Write(data, 0, data.Length);
         }
 
         public Message Recieve(NetworkStream stream)
         {
-            byte[] data = new byte[BUFFER_SIZE];
-            stream.Read(data, 0, BUFFER_SIZE);
+            byte[] dataLength = new byte[8];
+            stream.Read(dataLength, 0, dataLength.Length);
+
+            byte[] data = new byte[dataLength.asInt64()];
+            stream.Read(data, 0, data.Length);
 
             //should check if message is actually completely recieved 
             return Message.Deserialize(data);

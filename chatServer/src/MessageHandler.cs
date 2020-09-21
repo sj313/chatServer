@@ -5,8 +5,8 @@ using System.Net.Sockets;
 using System.Threading;
 using Google.Protobuf;
 using System.Security.Cryptography;
-using ChatServer.Transmisisons;
 using System.Text;
+using ChatServer.Transmissions;
 
 namespace ChatServer
 {
@@ -15,16 +15,20 @@ namespace ChatServer
         private readonly ConcurrentQueue<Message> MessagesRecieved = new ConcurrentQueue<Message>();
         private readonly ManualResetEvent messagesRecievedSignal = new ManualResetEvent(false);
 
-        public void Send(User recipient, Message message)
+        private readonly byte[] TEMP_PASSWORD = Encoding.UTF8.GetBytes("Password");
+
+        public void Send(User recipient, Message newMessage)
         {
-            var tempKey = new RSACryptoServiceProvider(2048);
-            var password = Encoding.UTF8.GetBytes("Password");
-            var transmission = new Transmission(tempKey.ExportRSAPrivateKey(), message.Serialize());
-            var encryptedTransmission = new EncryptedTransmission(transmission, password);
+            var tempKey = (new RSACryptoServiceProvider(2048)).ExportRSAPrivateKey();
+            var encryptedMessage = new EncryptedMessage(newMessage.Serialize(), TEMP_PASSWORD);
+            var message = new Transmissions.Message(encryptedMessage);
+            var transmission = new Transmission(message, tempKey);
+            var encryptedTransmission = new EncryptedTransmission(transmission, TEMP_PASSWORD);
+
             Send(recipient.getStream(), encryptedTransmission.ToByteArray());
         }
 
-        void Send(NetworkStream stream, byte[] implicitBytes)
+        private void Send(NetworkStream stream, byte[] implicitBytes)
         {
             var data = implicitBytes.Length.asBtyes().Concat(implicitBytes).ToArray();
 
@@ -33,21 +37,29 @@ namespace ChatServer
 
         public Message Recieve(NetworkStream stream)
         {
-            byte[] messageLength = new byte[8];
-            stream.Read(messageLength, 0, 8);
+            byte[] readData()
+            {
+                byte[] messageLength = new byte[8];
+                stream.Read(messageLength, 0, 8);
 
-            byte[] data = new byte[messageLength.asInt64()];
-            stream.Read(data, 0, data.Length);
+                byte[] data = new byte[messageLength.asInt64()];
+                stream.Read(data, 0, data.Length);
+                return data;
+            }
+            
+            byte[] parseAndDecrypt(byte[] data)
+            {
+                var parser = new MessageParser<EncryptedTransmission>(() => new EncryptedTransmission());
+                var encryptedTransmission = parser.ParseFrom(data);
+                var transmission = encryptedTransmission.Decrypt(TEMP_PASSWORD);
+                var message = transmission.Message;
+                var encryptedMessage = message.EncryptedMessage;
+                return encryptedMessage.Decrypt(TEMP_PASSWORD);
+            }
 
-            var password = Encoding.UTF8.GetBytes("Password");
-            var encryptedParser = new MessageParser<EncryptedTransmission>(() => new EncryptedTransmission());
-            var encryptedTransmission = encryptedParser.ParseFrom(data);
-            var parser = new MessageParser<Transmission>(() => new Transmission());
-            var transmission = parser.ParseFrom(encryptedTransmission.Decrypt(password));
+            var data = readData();
+            var message = parseAndDecrypt(data);       
 
-            var message = transmission.GetData();
-
-            //should check if message is actually completely recieved 
             return Message.Deserialize(message);
         }
 

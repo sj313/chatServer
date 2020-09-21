@@ -2,7 +2,7 @@ using System;
 using ChatServer.Encryption;
 using Google.Protobuf;
 
-namespace ChatServer.Transmisisons {
+namespace ChatServer.Transmissions {
 
     public sealed partial class EncryptedTransmission
     {
@@ -11,9 +11,11 @@ namespace ChatServer.Transmisisons {
             EncryptedTransmission_ = ByteString.CopyFrom(AES.Encrypt(transmission.ToByteArray(), password));
         }
 
-        public byte[] Decrypt(byte[] password)
+        public Transmission Decrypt(byte[] password)
         {
-            return AES.Decrypt(EncryptedTransmission_.ToByteArray(), password);
+            var decryptedBytes =  AES.Decrypt(EncryptedTransmission_.ToByteArray(), password);
+            var parser = new MessageParser<Transmission>(() => new Transmission());
+            return parser.ParseFrom(decryptedBytes);
         }
     }
 

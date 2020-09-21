@@ -2,35 +2,29 @@ using System;
 using ChatServer.Encryption;
 using Google.Protobuf;
 
-namespace ChatServer.Transmisisons {
+namespace ChatServer.Transmissions {
 
     public sealed partial class Transmission
     {
-        public Transmission(ReadOnlySpan<byte> privKey, byte[] data)
+        public Transmission(Message message, ReadOnlySpan<byte> privKey)
         {
-            Type = this.GetType().FullName;
-            Data = ByteString.CopyFrom(RSA.Sign(privKey, data));
-            OnConstruction();
+            Message = message;
+            Signature = ByteString.CopyFrom(RSA.CreateSignature(privKey, Message.ToByteArray()));
         }
-
-        public void AppendToDataFront(byte[] dataToAppend)
+        
+        public Transmission(Request request, ReadOnlySpan<byte> privKey)
         {
-            var appendSize = dataToAppend.Length - 1;
-            var data = Data.ToByteArray();
-            var appendedData = new byte[data.Length + appendSize];
-            dataToAppend.CopyTo(appendedData, 0);
-            data.CopyTo(appendedData, appendSize);
-            Data = ByteString.CopyFrom(appendedData);
-        }
-
-        public byte[] GetData()
-        {
-            return RSA.RemoveSignature(Data.ToByteArray());
+            Request = request;
+            Signature = ByteString.CopyFrom(RSA.CreateSignature(privKey, Request.ToByteArray()));
         }
 
         public bool Verify(ReadOnlySpan<byte> pubKey)
         {
-            return RSA.Verify(pubKey, Data.ToByteArray());
+            if (Message.IsInitialized())
+                return RSA.Verify(pubKey, Message.ToByteArray());
+            if (Request.IsInitialized())
+                return RSA.Verify(pubKey, Request.ToByteArray());
+            return false;
         }
 
     }

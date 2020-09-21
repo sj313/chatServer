@@ -1,5 +1,5 @@
 syntax = "proto3";
-package ChatServer.Proto;
+package ChatServer.Transmissions;
 
 message EncryptedTransmission {
     bytes EncryptedTransmission = 1;

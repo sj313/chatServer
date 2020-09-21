@@ -1,7 +1,12 @@
 syntax = "proto3";
-package ChatServer.Proto;
+package ChatServer.Transmissions;
+import "messages/message.proto";
+import "requests/request.proto";
 
 message Transmission {
-    string type = 1;
-    bytes data = 2;
+    bytes signature = 1;
+    oneof content {
+        Message message = 2;
+        Request request = 3;
+    }
 }

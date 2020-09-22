@@ -47,7 +47,6 @@ namespace ChatServer
 
             var message = transmission.GetData();
 
-            //should check if message is actually completely recieved 
             return Message.Deserialize(message);
         }
 

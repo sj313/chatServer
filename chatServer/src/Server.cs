@@ -24,21 +24,30 @@ namespace ChatServer
 
         public static void StartServer()
         {
-            UICONTROLLER.Display += (x) => { System.Console.WriteLine($"<{x.Author.Name}>: {x._message}"); };
-            //System.Console.WriteLine(Dns.GetHostName());
-
-            Task rebroadcasting = new Task(() => { MESSAGE_HANDLER.OnMessageRecieved(RebroadcastMessage); });
-            rebroadcasting.Start();
-
-            Task lookingForConenctions = new Task(LookForConnections);
-            lookingForConenctions.Start();
-
-            lookingForConenctions.Wait();
-            rebroadcasting.Wait();
-
-            foreach (var user in USERS)
+            try
             {
-                user.Connection.Dispose();
+                UICONTROLLER.Display += System.Console.WriteLine;
+
+                Task rebroadcasting = new Task(() => MESSAGE_HANDLER.OnMessageRecieved(RebroadcastMessage));
+
+                Task lookingForConenctions = new Task(LookForConnections);
+
+                rebroadcasting.Start();
+                lookingForConenctions.Start();
+
+                lookingForConenctions.Wait();
+                rebroadcasting.Wait();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                foreach (var user in USERS)
+                {
+                    user.Connection.Dispose();
+                }
             }
         }
 
@@ -47,14 +56,13 @@ namespace ChatServer
             try
             {
                 LISTENER.Start(1000);
-                UICONTROLLER.Display(new Message(SERVER_USER, "Starting up..."));
+                UICONTROLLER.Display("Starting up...");
                 while (true)
                 {
-                    UICONTROLLER.Display(new Message(SERVER_USER, "Looking for connections..."));
+                    UICONTROLLER.Display("Looking for connections...");
                     var newClient = LISTENER.AcceptTcpClient();
-                    UICONTROLLER.Display(new Message(SERVER_USER, $"Connection made!"));
+                    UICONTROLLER.Display("Connection made!");
                     new Task(() => OnBoard(newClient)).Start();
-                    //OnBoard(newClient);
                 }
             }
             catch (SocketException e)
@@ -64,13 +72,13 @@ namespace ChatServer
             finally
             {
                 LISTENER.Stop();
-                UICONTROLLER.Display(new Message(SERVER_USER, "Shutting down..."));
+                UICONTROLLER.Display("Shutting down...");
             }
         }
 
         static void RebroadcastMessage(Message message)
         {
-            UICONTROLLER.Display(message);
+            UICONTROLLER.Display(message._message);
 
             foreach (var user in USERS)
             {
@@ -102,7 +110,7 @@ namespace ChatServer
             MESSAGE_HANDLER.Send(newUser, new Message(SERVER_USER, $"Your username is: '{username}'"));
             USERS.Add(newUser);
 
-            UICONTROLLER.Display(new Message(SERVER_USER, $"New user: '{username}' added"));
+            UICONTROLLER.Display($"New user: '{username}' added");
 
             new Task(() => { RebroadcastMessage(new Message(SERVER_USER, $"------------------------------ '{username}' has entered the chat ------------------------------")); }).Start();
             new Task(() => { MESSAGE_HANDLER.RecieveFrom(newUser.getStream()); }).Start();

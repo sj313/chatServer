@@ -12,11 +12,11 @@ namespace ChatServer
     {
         // public UIController
 
-        public Action<Message> Display = null;
+        public Action<string> Display = null;
 
-        public Func<Message> Input = null;
+        public Func<string> Input = null;
 
-        public void getInput(Action<Message> doSomething)
+        public void getInput(Action<string> doSomething)
         {
             while (true)
             {

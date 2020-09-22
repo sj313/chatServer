@@ -17,7 +17,7 @@ namespace ChatServer
             }
             else if (args.Length == 1 && args[0].Equals("client"))
             {
-                Client.StartClient();
+                new Client();
                 return;
             }
             else if (args.Length == 3 && args[0].Equals("server") && args[1].Equals("client") && int.TryParse(args[2], out numberOfClients))
@@ -39,7 +39,7 @@ namespace ChatServer
 
         private static void ReportError()
         {
-            throw new Exception("Usage: 'server? client? <numberOfClients>?' - E.G: 'server client 1', or 'server', or 'client', or 'client'");
+            throw new Exception("Usage: 'server? client? <numberOfClients>?' - i.e: 'server client 1', or 'server', or 'client', or 'client'");
         }
 
         private static Process[] StartNClients(int N)

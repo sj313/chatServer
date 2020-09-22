@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Security.Cryptography;
 using ChatServer.Transmissions;
 
@@ -42,10 +41,7 @@ namespace ChatServer
 
         private static void Rebroadcast(Transmission transmission)
         {
-            foreach (var recipient in Server.CONNECTIONS)
-            {
-                if (recipient.Onboarded) Server.TRANSMISSION_HANDLER.Send(recipient, transmission);
-            }
+            ServerTransmissionHandler.SendAll(transmission);
         }
 
         private static void Onboard(Tuple<Transmission, Connection> transmission)
@@ -62,33 +58,33 @@ namespace ChatServer
                     }
                     catch
                     {
-                        Server.TRANSMISSION_HANDLER.SendOnboardRequest(transmission.Item2, "UserID invalid");
+                        ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID invalid");
                         return;
                     }
 
                     if (existingConnection.User.ID == response.UserID.ToByteArray())
                     {
-                        Server.TRANSMISSION_HANDLER.SendOnboardRequest(transmission.Item2, "UserID already connected");
+                        ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID already connected");
                         return;
                     }
                 }
             }
             else
             {
-                Server.TRANSMISSION_HANDLER.SendOnboardRequest(transmission.Item2, "UserID not provided");
+                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID not provided");
                 return;
             }
 
             if (String.IsNullOrWhiteSpace(response.Name))
             {
-                Server.TRANSMISSION_HANDLER.SendOnboardRequest(transmission.Item2, "Name not provided");
+                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "Name not provided");
                 return;
             }
 
             connection.Onboarded = true;
             connection.User.Name = response.Name;
             connection.User.ID = response.UserID.ToByteArray();
-            Server.TRANSMISSION_HANDLER.Send(Server.CONNECTIONS, $"------------------------------ '{response.Name}' has entered the chat ------------------------------");
+            ServerTransmissionHandler.SendAll($"------------------------------ '{response.Name}' has entered the chat ------------------------------");
             
         }
     }

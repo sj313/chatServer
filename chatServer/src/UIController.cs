@@ -8,19 +8,19 @@ using System.Linq;
 
 namespace ChatServer
 {
-    public class UIController
+    public abstract class UIController
     {
         // public UIController
 
-        public Action<string> Display = null;
+        public static Action<string> Display = null;
 
-        public Func<string> Input = null;
+        public static Func<string> Input = null;
 
-        public void getInput(Action<string> doSomething)
+        public static void getInput(Action<string> doSomething)
         {
             while (true)
             {
-                doSomething(this.Input());
+                doSomething(Input());
             }
         }
     }

@@ -3,79 +3,78 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Threading;
-
-
+using System.Text;
 
 namespace ChatServer
 {
-    public class Client
+    public abstract class Client
     {
         private const Int32 PORT = 9;
         private static readonly string HOSTNAME = Dns.GetHostName();
-        private Connection USER = new Connection(new TcpClient());
-        private MessageHandler MESSAGE_HANDLER = new MessageHandler();
+        public static readonly User USER = new User();
+        public static readonly TcpClient TCP_CLIENT = new TcpClient();
+        public static readonly byte[] SESSION_KEY = new byte[] {0};
+        private static readonly byte[] keyPass = Encoding.UTF8.GetBytes("ClientKeyPassword");
+        const string keyPath = @"..\resources\.clientKeys";
+        public static readonly byte[] SERVER_PASS = Encoding.UTF8.GetBytes("ServerPassword");
 
-        private UIController UICONTROLLER = new UIController();
 
-        private ManualResetEventSlim ONBOARDED = new ManualResetEventSlim(false);
 
         public static void StartClient()
         {
-            var CLEAR_AFTER = 3000;
-            Client thisClient = new Client();
-            thisClient.UICONTROLLER.Display += (x) =>
-            {
-                clearLines(Console.CursorTop, Console.CursorTop);
-                Console.SetCursorPosition(0, Console.CursorTop);
+            UIController.Display += (x) => Console.WriteLine(x);
+            Console.WriteLine("Please Enter Your Password");
+            // var keyPass = Encoding.UTF8.GetBytes(Console.ReadLine());
+            //ClientTransmissionHandler.SetKeys(keyPath, keyPass);
+            USER.ID = ClientTransmissionHandler.ClientKeys.ExportRSAPublicKey();
+            USER.Name = "Test";
+            AttemptConnect();
 
-                if (x.Author.Name.Equals(thisClient.USER.Name))
-                {
-                    System.Console.Write($"<You>: {x._message}\n\n");
-                }
-                else
-                {
-                    System.Console.Write($"<{x.Author.Name}>: {x._message}\n\n");
-                }
-                System.Console.Write("<You>: ");
-            };
+            // var CLEAR_AFTER = 3000;
+            // UICONTROLLER.Display += (x) =>
+            // {
+            //     clearLines(Console.CursorTop, Console.CursorTop);
+            //     Console.SetCursorPosition(0, Console.CursorTop);
 
-            thisClient.UICONTROLLER.Input += () =>
+            //     if (x.Author.Name.Equals(TCP_CLIENT.Name))
+            //     {
+            //         System.Console.Write($"<You>: {x._message}\n\n");
+            //     }
+            //     else
+            //     {
+            //         System.Console.Write($"<{x.Author.Name}>: {x._message}\n\n");
+            //     }
+            //     System.Console.Write("<You>: ");
+            // };
+
+            UIController.Input += () =>
             {
                 var inputLine = Console.ReadLine();
 
-                //inputLine = inputLine.StartsWith(PREFIX) ? inputLine.Substring(PREFIX.Length) : inputLine;
-                var returnMessage = new Message(thisClient.USER, inputLine);
-                clearLines(Console.CursorTop - 1, Console.CursorTop - 1);
-                Console.SetCursorPosition(0, Console.CursorTop - 1);
-                return returnMessage;
+                // inputLine = inputLine.StartsWith(PREFIX) ? inputLine.Substring(PREFIX.Length) : inputLine;
+                // var returnMessage = new Message(TCP_CLIENT, inputLine);
+                // clearLines(Console.CursorTop - 1, Console.CursorTop - 1);
+                // Console.SetCursorPosition(0, Console.CursorTop - 1);
+                // return returnMessage;
+                return inputLine;
             };
 
             try
             {
-                Task recievingMessages = new Task(() => { thisClient.MESSAGE_HANDLER.RecieveFrom(thisClient.USER.TCPConnection.GetStream()); });
+                Task recievingMessages = new Task(() => { ClientTransmissionHandler.RecieveFrom(); });
 
                 Task displayingMessages = new Task(() =>
                 {
-                    thisClient.MESSAGE_HANDLER.OnMessageRecieved((x) =>
-                    {
-                        if (x._message.Contains("Your username is: '") && !thisClient.ONBOARDED.IsSet)
-                        {
-                            thisClient.USER.User.Name = x._message.Split('\'')[1];
-                            new Task(() => { Thread.Sleep(CLEAR_AFTER); clearLines(0, 5); Console.SetWindowPosition(0, 6); }).Start();
-                            thisClient.ONBOARDED.Set();
-                        }
-                        thisClient.UICONTROLLER.Display(x);
-                    });
+                    ClientTransmissionHandler.OnTransmissionRecieved();
                 });
 
-                Task gettingInput = new Task(() => { thisClient.UICONTROLLER.getInput((x) => { thisClient.MESSAGE_HANDLER.Send(thisClient.USER, x); }); });
+                Task gettingInput = new Task(() => { UIController.getInput((x) => { ClientTransmissionHandler.Send(x); }); });
 
-                thisClient.ConnectToHost();
                 displayingMessages.Start();
                 gettingInput.Start();
                 recievingMessages.Start();
 
-                recievingMessages.Wait();
+                displayingMessages.Wait();
                 gettingInput.Wait();
                 recievingMessages.Wait();
             }
@@ -85,32 +84,41 @@ namespace ChatServer
             }
             finally
             {
-                thisClient.USER.TCPConnection.Dispose();
+                TCP_CLIENT.Dispose();
             }
 
         }
 
-        void ConnectToHost()
+        private static void AttemptConnect()
         {
-            try
+            var success = false;
+            while (!success)
             {
-                USER.TCPConnection.Connect(HOSTNAME, PORT);
+                UIController.Display("Attempting to connect");
+                try
+                {
+                    TCP_CLIENT.Connect(HOSTNAME, PORT);
+                    success = true;
+
+                }
+                catch (SocketException e)
+                {
+                    Console.WriteLine("SocketException: {0}", e);
+                }
+                System.Threading.Thread.Sleep(1000);
             }
-            catch (SocketException e)
-            {
-                Console.WriteLine("SocketException: {0}", e);
-            }
+            UIController.Display("Connected Succesfully");
         }
 
-        private static void clearLines(int start, int end)
-        {
-            var (startX, startY) = (Console.CursorLeft, Console.CursorTop);
-            for (int i = start; i <= end; i++)
-            {
-                Console.SetCursorPosition(0, i);
-                Console.Write(new string(' ', Console.WindowWidth));
-            }
-            Console.SetCursorPosition(startX, startY);
-        }
+        // private static void clearLines(int start, int end)
+        // {
+        //     var (startX, startY) = (Console.CursorLeft, Console.CursorTop);
+        //     for (int i = start; i <= end; i++)
+        //     {
+        //         Console.SetCursorPosition(0, i);
+        //         Console.Write(new string(' ', Console.WindowWidth));
+        //     }
+        //     Console.SetCursorPosition(startX, startY);
+        // }
     }
 }

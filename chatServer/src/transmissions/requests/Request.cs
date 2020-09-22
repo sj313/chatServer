@@ -5,5 +5,9 @@ namespace ChatServer.Transmissions {
         {
             OnboardingRequest = onboardingRequest;
         }
+        public Request(OnboardingResponse onboardingResponse)
+        {
+            OnboardingResponse = onboardingResponse;
+        }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Net.Sockets;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -9,21 +9,21 @@ using Google.Protobuf;
 
 namespace ChatServer
 {
-    public class TransmissionHandlerServer
+    public abstract class ServerTransmissionHandler
     {
-        private readonly ConcurrentQueue<Tuple<Transmission, Connection>> TransmissionsRecieved = new ConcurrentQueue<Tuple<Transmission, Connection>>();
-        private readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
+        private static readonly ConcurrentQueue<Tuple<Transmission, Connection>> TransmissionsRecieved = new ConcurrentQueue<Tuple<Transmission, Connection>>();
+        private static readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
 
-        private readonly byte[] keyPass = Encoding.UTF8.GetBytes("ServerKeyPassword");
-        const string keyPath = @"..\..\resources\.serverkeys";
-        private readonly RSACryptoServiceProvider ServerKeys = new RSACryptoServiceProvider(2048);
+        private static readonly RSACryptoServiceProvider ServerKeys = new RSACryptoServiceProvider(2048);
 
-        public TransmissionHandlerServer()
+         public static void SetKeys(string keyPath, byte[] keyPass)
         {
+            if (!File.Exists(keyPath))
+                Encryption.RSA.GenerateAndStoreNewEncryptedKeyPair(keyPath, keyPass);
             ServerKeys.ImportParameters(Encryption.RSA.GetStoredEncryptedKeyPair(keyPath, keyPass, true));
         }
 
-        public Transmission CreateTransmission(string messageString)
+        public static Transmission CreateTransmission(string messageString)
         {
             var messageBytes = Encoding.UTF8.GetBytes(messageString);
             var serverMessage = new ServerMessage(messageBytes);
@@ -31,21 +31,26 @@ namespace ChatServer
             return new Transmission(message, ServerKeys.ExportRSAPrivateKey(), ServerKeys.ExportRSAPublicKey());
         }
         
-        public void Send(ConcurrentBag<Connection> connections, string messageString)
+        public static void SendAll(string messageString)
         {
-            var transmission = CreateTransmission(messageString);
-            foreach (Connection connection in connections)
+            SendAll(CreateTransmission(messageString));
+            
+        }
+
+        public static void SendAll(Transmission transmission)
+        {
+            foreach (Connection connection in Server.CONNECTIONS)
             {
-                Send(connection, transmission);
+                if (connection.Onboarded) Send(connection, transmission);
             }
         }
 
-        public void Send(Connection connection, string messageString)
+        public static void Send(Connection connection, string messageString)
         {
             Send(connection, CreateTransmission(messageString));
         }
 
-        public void Send(Connection connection, Transmission transmission)
+        public static void Send(Connection connection, Transmission transmission)
         {
             var encryptedTransmission = new EncryptedTransmission(transmission, connection.SessionKey);
 
@@ -56,7 +61,7 @@ namespace ChatServer
             stream.Write(bytes, 0, bytes.Length);
         }
 
-        public void RecieveFrom(Connection connection)
+        public static void RecieveFrom(Connection connection)
         {
             while (true)
             {
@@ -65,7 +70,7 @@ namespace ChatServer
             }
         }
 
-        public Transmission Recieve(Connection connection)
+        public static Transmission Recieve(Connection connection)
         {
             var stream = connection.TCPConnection.GetStream();
 
@@ -80,7 +85,7 @@ namespace ChatServer
             return encryptedTransmission.Decrypt(connection.SessionKey);
         }
 
-        public void OnTransmissionRecieved()
+        public static void OnTransmissionRecieved()
         {
             while (true)
             {
@@ -101,7 +106,7 @@ namespace ChatServer
             }
         }
     
-        public void SendOnboardRequest(Connection connection, string message)
+        public static void SendOnboardRequest(Connection connection, string message)
         {
             var onboardingRequest = new OnboardingRequest();
             var request = new Request(onboardingRequest);

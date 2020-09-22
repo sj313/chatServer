@@ -1,0 +1,12 @@
+syntax = "proto3";
+package ChatServer.Transmissions;
+import "messages/encryptedMessage.proto";
+import "messages/serverMessage.proto";
+
+message Message {
+    int64 chatID = 1;
+    oneof messageType {
+        EncryptedMessage encryptedMessage = 2;
+        ServerMessage serverMessage = 3;
+    }
+}

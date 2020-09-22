@@ -20,6 +20,14 @@ namespace ChatServer.Encryption
 
             return signedData;
         }
+        
+        public static byte[] CreateSignature(ReadOnlySpan<byte> privKey, byte[] data)
+        {
+            var rsa = new RSACryptoServiceProvider(2048);
+            rsa.ImportRSAPrivateKey(privKey, out int i);
+            var signature = rsa.SignData(data, SHA256.Create());
+            return signature;
+        }
 
         public static bool Verify(ReadOnlySpan<byte> publicKey, byte[] signedData)
         {

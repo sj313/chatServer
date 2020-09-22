@@ -1,0 +1,7 @@
+syntax = "proto3";
+package ChatServer.Transmissions;
+
+message EncryptedMessage {
+    bytes userID = 1;
+    bytes message = 2;    
+}

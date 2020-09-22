@@ -1,36 +1,31 @@
-using System;
 using ChatServer.Encryption;
 using Google.Protobuf;
 
-namespace ChatServer.Transmisisons {
+namespace ChatServer.Transmissions {
 
     public sealed partial class Transmission
     {
-        public Transmission(ReadOnlySpan<byte> privKey, byte[] data)
+        public Transmission(Message message, byte[] privKey, byte[] pubKey)
         {
-            Type = this.GetType().FullName;
-            Data = ByteString.CopyFrom(RSA.Sign(privKey, data));
-            OnConstruction();
+            Message = message;
+            Signature = ByteString.CopyFrom(RSA.CreateSignature(privKey, Message.ToByteArray()));
+            SenderID = ByteString.CopyFrom(pubKey);
+        }
+        
+        public Transmission(Request request, byte[] privKey, byte[] pubKey)
+        {
+            Request = request;
+            Signature = ByteString.CopyFrom(RSA.CreateSignature(privKey, Request.ToByteArray()));
+            SenderID = ByteString.CopyFrom(pubKey);
         }
 
-        public void AppendToDataFront(byte[] dataToAppend)
+        public bool Verify()
         {
-            var appendSize = dataToAppend.Length - 1;
-            var data = Data.ToByteArray();
-            var appendedData = new byte[data.Length + appendSize];
-            dataToAppend.CopyTo(appendedData, 0);
-            data.CopyTo(appendedData, appendSize);
-            Data = ByteString.CopyFrom(appendedData);
-        }
-
-        public byte[] GetData()
-        {
-            return RSA.RemoveSignature(Data.ToByteArray());
-        }
-
-        public bool Verify(ReadOnlySpan<byte> pubKey)
-        {
-            return RSA.Verify(pubKey, Data.ToByteArray());
+            if (Message.IsInitialized())
+                return RSA.Verify(SenderID.ToByteArray(), Message.ToByteArray());
+            if (Request.IsInitialized())
+                return RSA.Verify(SenderID.ToByteArray(), Request.ToByteArray());
+            return false;
         }
 
     }

@@ -12,7 +12,7 @@ namespace ChatServer
     {
         private const Int32 PORT = 9;
         private static readonly string HOSTNAME = Dns.GetHostName();
-        private User USER = new User(new TcpClient());
+        private Connection USER = new Connection(new TcpClient());
         private MessageHandler MESSAGE_HANDLER = new MessageHandler();
 
         private UIController UICONTROLLER = new UIController();
@@ -52,7 +52,7 @@ namespace ChatServer
 
             try
             {
-                Task recievingMessages = new Task(() => { thisClient.MESSAGE_HANDLER.RecieveFrom(thisClient.USER.getStream()); });
+                Task recievingMessages = new Task(() => { thisClient.MESSAGE_HANDLER.RecieveFrom(thisClient.USER.TCPConnection.GetStream()); });
 
                 Task displayingMessages = new Task(() =>
                 {
@@ -60,7 +60,7 @@ namespace ChatServer
                     {
                         if (x._message.Contains("Your username is: '") && !thisClient.ONBOARDED.IsSet)
                         {
-                            thisClient.USER.Name = x._message.Split('\'')[1];
+                            thisClient.USER.User.Name = x._message.Split('\'')[1];
                             new Task(() => { Thread.Sleep(CLEAR_AFTER); clearLines(0, 5); Console.SetWindowPosition(0, 6); }).Start();
                             thisClient.ONBOARDED.Set();
                         }
@@ -85,7 +85,7 @@ namespace ChatServer
             }
             finally
             {
-                thisClient.USER.Connection.Dispose();
+                thisClient.USER.TCPConnection.Dispose();
             }
 
         }
@@ -94,7 +94,7 @@ namespace ChatServer
         {
             try
             {
-                USER.Connection.Connect(HOSTNAME, PORT);
+                USER.TCPConnection.Connect(HOSTNAME, PORT);
             }
             catch (SocketException e)
             {

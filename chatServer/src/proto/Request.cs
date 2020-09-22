@@ -25,11 +25,17 @@ namespace ChatServer.Transmissions {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChZyZXF1ZXN0cy9yZXF1ZXN0LnByb3RvEhhDaGF0U2VydmVyLlRyYW5zbWlz",
-            "c2lvbnMiCQoHUmVxdWVzdGIGcHJvdG8z"));
+            "c2lvbnMaIHJlcXVlc3RzL29uYm9hcmRpbmdSZXF1ZXN0LnByb3RvGiFyZXF1",
+            "ZXN0cy9vbmJvYXJkaW5nUmVzcG9uc2UucHJvdG8ivQEKB1JlcXVlc3QSEQoJ",
+            "cmVxdWVzdElEGAEgASgDEkgKEW9uYm9hcmRpbmdSZXF1ZXN0GAIgASgLMisu",
+            "Q2hhdFNlcnZlci5UcmFuc21pc3Npb25zLk9uYm9hcmRpbmdSZXF1ZXN0SAAS",
+            "SgoST25ib2FyZGluZ1Jlc3BvbnNlGAMgASgLMiwuQ2hhdFNlcnZlci5UcmFu",
+            "c21pc3Npb25zLk9uYm9hcmRpbmdSZXNwb25zZUgAQgkKB3JlcXVlc3RiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::ChatServer.Transmissions.OnboardingRequestReflection.Descriptor, global::ChatServer.Transmissions.OnboardingResponseReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Request), global::ChatServer.Transmissions.Request.Parser, null, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Request), global::ChatServer.Transmissions.Request.Parser, new[]{ "RequestID", "OnboardingRequest", "OnboardingResponse" }, new[]{ "Request" }, null, null, null)
           }));
     }
     #endregion
@@ -65,12 +71,74 @@ namespace ChatServer.Transmissions {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Request(Request other) : this() {
+      requestID_ = other.requestID_;
+      switch (other.RequestCase) {
+        case RequestOneofCase.OnboardingRequest:
+          OnboardingRequest = other.OnboardingRequest.Clone();
+          break;
+        case RequestOneofCase.OnboardingResponse:
+          OnboardingResponse = other.OnboardingResponse.Clone();
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Request Clone() {
       return new Request(this);
+    }
+
+    /// <summary>Field number for the "requestID" field.</summary>
+    public const int RequestIDFieldNumber = 1;
+    private long requestID_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long RequestID {
+      get { return requestID_; }
+      set {
+        requestID_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "onboardingRequest" field.</summary>
+    public const int OnboardingRequestFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::ChatServer.Transmissions.OnboardingRequest OnboardingRequest {
+      get { return requestCase_ == RequestOneofCase.OnboardingRequest ? (global::ChatServer.Transmissions.OnboardingRequest) request_ : null; }
+      set {
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.OnboardingRequest;
+      }
+    }
+
+    /// <summary>Field number for the "OnboardingResponse" field.</summary>
+    public const int OnboardingResponseFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::ChatServer.Transmissions.OnboardingResponse OnboardingResponse {
+      get { return requestCase_ == RequestOneofCase.OnboardingResponse ? (global::ChatServer.Transmissions.OnboardingResponse) request_ : null; }
+      set {
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.OnboardingResponse;
+      }
+    }
+
+    private object request_;
+    /// <summary>Enum of possible cases for the "request" oneof.</summary>
+    public enum RequestOneofCase {
+      None = 0,
+      OnboardingRequest = 2,
+      OnboardingResponse = 3,
+    }
+    private RequestOneofCase requestCase_ = RequestOneofCase.None;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public RequestOneofCase RequestCase {
+      get { return requestCase_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearRequest() {
+      requestCase_ = RequestOneofCase.None;
+      request_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -86,12 +154,20 @@ namespace ChatServer.Transmissions {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (RequestID != other.RequestID) return false;
+      if (!object.Equals(OnboardingRequest, other.OnboardingRequest)) return false;
+      if (!object.Equals(OnboardingResponse, other.OnboardingResponse)) return false;
+      if (RequestCase != other.RequestCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
+      if (RequestID != 0L) hash ^= RequestID.GetHashCode();
+      if (requestCase_ == RequestOneofCase.OnboardingRequest) hash ^= OnboardingRequest.GetHashCode();
+      if (requestCase_ == RequestOneofCase.OnboardingResponse) hash ^= OnboardingResponse.GetHashCode();
+      hash ^= (int) requestCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -108,6 +184,18 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
+      if (RequestID != 0L) {
+        output.WriteRawTag(8);
+        output.WriteInt64(RequestID);
+      }
+      if (requestCase_ == RequestOneofCase.OnboardingRequest) {
+        output.WriteRawTag(18);
+        output.WriteMessage(OnboardingRequest);
+      }
+      if (requestCase_ == RequestOneofCase.OnboardingResponse) {
+        output.WriteRawTag(26);
+        output.WriteMessage(OnboardingResponse);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -117,6 +205,18 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (RequestID != 0L) {
+        output.WriteRawTag(8);
+        output.WriteInt64(RequestID);
+      }
+      if (requestCase_ == RequestOneofCase.OnboardingRequest) {
+        output.WriteRawTag(18);
+        output.WriteMessage(OnboardingRequest);
+      }
+      if (requestCase_ == RequestOneofCase.OnboardingResponse) {
+        output.WriteRawTag(26);
+        output.WriteMessage(OnboardingResponse);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -126,6 +226,15 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (RequestID != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(RequestID);
+      }
+      if (requestCase_ == RequestOneofCase.OnboardingRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OnboardingRequest);
+      }
+      if (requestCase_ == RequestOneofCase.OnboardingResponse) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OnboardingResponse);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -137,6 +246,24 @@ namespace ChatServer.Transmissions {
       if (other == null) {
         return;
       }
+      if (other.RequestID != 0L) {
+        RequestID = other.RequestID;
+      }
+      switch (other.RequestCase) {
+        case RequestOneofCase.OnboardingRequest:
+          if (OnboardingRequest == null) {
+            OnboardingRequest = new global::ChatServer.Transmissions.OnboardingRequest();
+          }
+          OnboardingRequest.MergeFrom(other.OnboardingRequest);
+          break;
+        case RequestOneofCase.OnboardingResponse:
+          if (OnboardingResponse == null) {
+            OnboardingResponse = new global::ChatServer.Transmissions.OnboardingResponse();
+          }
+          OnboardingResponse.MergeFrom(other.OnboardingResponse);
+          break;
+      }
+
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -151,6 +278,28 @@ namespace ChatServer.Transmissions {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
+          case 8: {
+            RequestID = input.ReadInt64();
+            break;
+          }
+          case 18: {
+            global::ChatServer.Transmissions.OnboardingRequest subBuilder = new global::ChatServer.Transmissions.OnboardingRequest();
+            if (requestCase_ == RequestOneofCase.OnboardingRequest) {
+              subBuilder.MergeFrom(OnboardingRequest);
+            }
+            input.ReadMessage(subBuilder);
+            OnboardingRequest = subBuilder;
+            break;
+          }
+          case 26: {
+            global::ChatServer.Transmissions.OnboardingResponse subBuilder = new global::ChatServer.Transmissions.OnboardingResponse();
+            if (requestCase_ == RequestOneofCase.OnboardingResponse) {
+              subBuilder.MergeFrom(OnboardingResponse);
+            }
+            input.ReadMessage(subBuilder);
+            OnboardingResponse = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -165,6 +314,28 @@ namespace ChatServer.Transmissions {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
+          case 8: {
+            RequestID = input.ReadInt64();
+            break;
+          }
+          case 18: {
+            global::ChatServer.Transmissions.OnboardingRequest subBuilder = new global::ChatServer.Transmissions.OnboardingRequest();
+            if (requestCase_ == RequestOneofCase.OnboardingRequest) {
+              subBuilder.MergeFrom(OnboardingRequest);
+            }
+            input.ReadMessage(subBuilder);
+            OnboardingRequest = subBuilder;
+            break;
+          }
+          case 26: {
+            global::ChatServer.Transmissions.OnboardingResponse subBuilder = new global::ChatServer.Transmissions.OnboardingResponse();
+            if (requestCase_ == RequestOneofCase.OnboardingResponse) {
+              subBuilder.MergeFrom(OnboardingResponse);
+            }
+            input.ReadMessage(subBuilder);
+            OnboardingResponse = subBuilder;
+            break;
+          }
         }
       }
     }

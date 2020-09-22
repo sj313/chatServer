@@ -5,8 +5,9 @@ import "requests/request.proto";
 
 message Transmission {
     bytes signature = 1;
+    bytes senderID = 2;
     oneof content {
-        Message message = 2;
-        Request request = 3;
+        Message message = 3;
+        Request request = 4;
     }
 }

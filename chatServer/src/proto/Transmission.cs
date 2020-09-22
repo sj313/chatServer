@@ -26,14 +26,15 @@ namespace ChatServer.Transmissions {
           string.Concat(
             "ChJ0cmFuc21pc3Npb24ucHJvdG8SGENoYXRTZXJ2ZXIuVHJhbnNtaXNzaW9u",
             "cxoWbWVzc2FnZXMvbWVzc2FnZS5wcm90bxoWcmVxdWVzdHMvcmVxdWVzdC5w",
-            "cm90byKYAQoMVHJhbnNtaXNzaW9uEhEKCXNpZ25hdHVyZRgBIAEoDBI0Cgdt",
-            "ZXNzYWdlGAIgASgLMiEuQ2hhdFNlcnZlci5UcmFuc21pc3Npb25zLk1lc3Nh",
-            "Z2VIABI0CgdyZXF1ZXN0GAMgASgLMiEuQ2hhdFNlcnZlci5UcmFuc21pc3Np",
-            "b25zLlJlcXVlc3RIAEIJCgdjb250ZW50YgZwcm90bzM="));
+            "cm90byKqAQoMVHJhbnNtaXNzaW9uEhEKCXNpZ25hdHVyZRgBIAEoDBIQCghz",
+            "ZW5kZXJJRBgCIAEoDBI0CgdtZXNzYWdlGAMgASgLMiEuQ2hhdFNlcnZlci5U",
+            "cmFuc21pc3Npb25zLk1lc3NhZ2VIABI0CgdyZXF1ZXN0GAQgASgLMiEuQ2hh",
+            "dFNlcnZlci5UcmFuc21pc3Npb25zLlJlcXVlc3RIAEIJCgdjb250ZW50YgZw",
+            "cm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::ChatServer.Transmissions.MessageReflection.Descriptor, global::ChatServer.Transmissions.RequestReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Transmission), global::ChatServer.Transmissions.Transmission.Parser, new[]{ "Signature", "Message", "Request" }, new[]{ "Content" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Transmission), global::ChatServer.Transmissions.Transmission.Parser, new[]{ "Signature", "SenderID", "Message", "Request" }, new[]{ "Content" }, null, null, null)
           }));
     }
     #endregion
@@ -70,6 +71,7 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Transmission(Transmission other) : this() {
       signature_ = other.signature_;
+      senderID_ = other.senderID_;
       switch (other.ContentCase) {
         case ContentOneofCase.Message:
           Message = other.Message.Clone();
@@ -98,8 +100,19 @@ namespace ChatServer.Transmissions {
       }
     }
 
+    /// <summary>Field number for the "senderID" field.</summary>
+    public const int SenderIDFieldNumber = 2;
+    private pb::ByteString senderID_ = pb::ByteString.Empty;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pb::ByteString SenderID {
+      get { return senderID_; }
+      set {
+        senderID_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "message" field.</summary>
-    public const int MessageFieldNumber = 2;
+    public const int MessageFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::ChatServer.Transmissions.Message Message {
       get { return contentCase_ == ContentOneofCase.Message ? (global::ChatServer.Transmissions.Message) content_ : null; }
@@ -110,7 +123,7 @@ namespace ChatServer.Transmissions {
     }
 
     /// <summary>Field number for the "request" field.</summary>
-    public const int RequestFieldNumber = 3;
+    public const int RequestFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::ChatServer.Transmissions.Request Request {
       get { return contentCase_ == ContentOneofCase.Request ? (global::ChatServer.Transmissions.Request) content_ : null; }
@@ -124,8 +137,8 @@ namespace ChatServer.Transmissions {
     /// <summary>Enum of possible cases for the "content" oneof.</summary>
     public enum ContentOneofCase {
       None = 0,
-      Message = 2,
-      Request = 3,
+      Message = 3,
+      Request = 4,
     }
     private ContentOneofCase contentCase_ = ContentOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -153,6 +166,7 @@ namespace ChatServer.Transmissions {
         return true;
       }
       if (Signature != other.Signature) return false;
+      if (SenderID != other.SenderID) return false;
       if (!object.Equals(Message, other.Message)) return false;
       if (!object.Equals(Request, other.Request)) return false;
       if (ContentCase != other.ContentCase) return false;
@@ -163,6 +177,7 @@ namespace ChatServer.Transmissions {
     public override int GetHashCode() {
       int hash = 1;
       if (Signature.Length != 0) hash ^= Signature.GetHashCode();
+      if (SenderID.Length != 0) hash ^= SenderID.GetHashCode();
       if (contentCase_ == ContentOneofCase.Message) hash ^= Message.GetHashCode();
       if (contentCase_ == ContentOneofCase.Request) hash ^= Request.GetHashCode();
       hash ^= (int) contentCase_;
@@ -186,12 +201,16 @@ namespace ChatServer.Transmissions {
         output.WriteRawTag(10);
         output.WriteBytes(Signature);
       }
-      if (contentCase_ == ContentOneofCase.Message) {
+      if (SenderID.Length != 0) {
         output.WriteRawTag(18);
+        output.WriteBytes(SenderID);
+      }
+      if (contentCase_ == ContentOneofCase.Message) {
+        output.WriteRawTag(26);
         output.WriteMessage(Message);
       }
       if (contentCase_ == ContentOneofCase.Request) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(34);
         output.WriteMessage(Request);
       }
       if (_unknownFields != null) {
@@ -207,12 +226,16 @@ namespace ChatServer.Transmissions {
         output.WriteRawTag(10);
         output.WriteBytes(Signature);
       }
-      if (contentCase_ == ContentOneofCase.Message) {
+      if (SenderID.Length != 0) {
         output.WriteRawTag(18);
+        output.WriteBytes(SenderID);
+      }
+      if (contentCase_ == ContentOneofCase.Message) {
+        output.WriteRawTag(26);
         output.WriteMessage(Message);
       }
       if (contentCase_ == ContentOneofCase.Request) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(34);
         output.WriteMessage(Request);
       }
       if (_unknownFields != null) {
@@ -226,6 +249,9 @@ namespace ChatServer.Transmissions {
       int size = 0;
       if (Signature.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Signature);
+      }
+      if (SenderID.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(SenderID);
       }
       if (contentCase_ == ContentOneofCase.Message) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Message);
@@ -246,6 +272,9 @@ namespace ChatServer.Transmissions {
       }
       if (other.Signature.Length != 0) {
         Signature = other.Signature;
+      }
+      if (other.SenderID.Length != 0) {
+        SenderID = other.SenderID;
       }
       switch (other.ContentCase) {
         case ContentOneofCase.Message:
@@ -281,6 +310,10 @@ namespace ChatServer.Transmissions {
             break;
           }
           case 18: {
+            SenderID = input.ReadBytes();
+            break;
+          }
+          case 26: {
             global::ChatServer.Transmissions.Message subBuilder = new global::ChatServer.Transmissions.Message();
             if (contentCase_ == ContentOneofCase.Message) {
               subBuilder.MergeFrom(Message);
@@ -289,7 +322,7 @@ namespace ChatServer.Transmissions {
             Message = subBuilder;
             break;
           }
-          case 26: {
+          case 34: {
             global::ChatServer.Transmissions.Request subBuilder = new global::ChatServer.Transmissions.Request();
             if (contentCase_ == ContentOneofCase.Request) {
               subBuilder.MergeFrom(Request);
@@ -317,6 +350,10 @@ namespace ChatServer.Transmissions {
             break;
           }
           case 18: {
+            SenderID = input.ReadBytes();
+            break;
+          }
+          case 26: {
             global::ChatServer.Transmissions.Message subBuilder = new global::ChatServer.Transmissions.Message();
             if (contentCase_ == ContentOneofCase.Message) {
               subBuilder.MergeFrom(Message);
@@ -325,7 +362,7 @@ namespace ChatServer.Transmissions {
             Message = subBuilder;
             break;
           }
-          case 26: {
+          case 34: {
             global::ChatServer.Transmissions.Request subBuilder = new global::ChatServer.Transmissions.Request();
             if (contentCase_ == ContentOneofCase.Request) {
               subBuilder.MergeFrom(Request);

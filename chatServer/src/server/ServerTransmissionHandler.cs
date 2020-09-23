@@ -14,21 +14,12 @@ namespace ChatServer
         private static readonly ConcurrentQueue<Tuple<Transmission, Connection>> TransmissionsRecieved = new ConcurrentQueue<Tuple<Transmission, Connection>>();
         private static readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
 
-        private static readonly RSACryptoServiceProvider ServerKeys = new RSACryptoServiceProvider(2048);
-
-         public static void SetKeys(string keyPath, byte[] keyPass)
-        {
-            if (!File.Exists(keyPath))
-                Encryption.RSA.GenerateAndStoreNewEncryptedKeyPair(keyPath, keyPass);
-            ServerKeys.ImportParameters(Encryption.RSA.GetStoredEncryptedKeyPair(keyPath, keyPass, true));
-        }
-
         public static Transmission CreateTransmission(string messageString)
         {
             var messageBytes = Encoding.UTF8.GetBytes(messageString);
             var serverMessage = new ServerMessage(messageBytes);
             var message = new Message(0, serverMessage);
-            return new Transmission(message, ServerKeys.ExportRSAPrivateKey(), ServerKeys.ExportRSAPublicKey());
+            return new Transmission(message, Server.SERVER_KEYS.ExportRSAPrivateKey(), Server.SERVER_KEYS.ExportRSAPublicKey());
         }
         
         public static void SendAll(string messageString)
@@ -54,7 +45,7 @@ namespace ChatServer
         {
             var encryptedTransmission = new EncryptedTransmission(transmission, connection.SessionKey);
 
-            var stream = connection.TCPConnection.GetStream();
+            var stream = connection.TCPClient.GetStream();
             var bytes = encryptedTransmission.ToByteArray();
 
             stream.Write(BitConverter.GetBytes((Int64)bytes.Length), 0, 8);
@@ -72,7 +63,7 @@ namespace ChatServer
 
         public static Transmission Recieve(Connection connection)
         {
-            var stream = connection.TCPConnection.GetStream();
+            var stream = connection.TCPClient.GetStream();
 
             byte[] messageLength = new byte[8];
             stream.Read(messageLength, 0, 8);
@@ -110,7 +101,7 @@ namespace ChatServer
         {
             var onboardingRequest = new OnboardingRequest();
             var request = new Request(onboardingRequest);
-            var transmission = new Transmission(request, ServerKeys.ExportRSAPrivateKey(), ServerKeys.ExportRSAPublicKey());
+            var transmission = new Transmission(request, Server.SERVER_KEYS.ExportRSAPrivateKey(), Server.SERVER_KEYS.ExportRSAPublicKey());
             Send(connection, transmission);
         }
 

@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace ChatServer
 {
@@ -14,14 +15,12 @@ namespace ChatServer
         private static readonly TcpListener LISTENER = new TcpListener(LOCAL_ADDRESS, PORT);
         public static readonly ConcurrentBag<Connection> CONNECTIONS = new ConcurrentBag<Connection>();
         public static readonly string SERVER_NAME = "<SuperBot 5000>";
-        const string keyPath = @"..\resources\.serverkeys";
-        private static readonly byte[] keyPass = Encoding.UTF8.GetBytes("ServerKeyPassword");
-
-
+        const string KEY_PATH = @"..\resources\.serverkeys";
+        private static readonly byte[] KEY_PASS = Encoding.UTF8.GetBytes("ServerKeyPassword");
+        public static RSACryptoServiceProvider SERVER_KEYS = Encryption.KeyStorage.GetKeys(KEY_PATH, KEY_PASS);
 
         public static void StartServer()
         {
-            ServerTransmissionHandler.SetKeys(keyPath, keyPass);
             //UICONTROLLER.Display += (x) => { System.Console.WriteLine($"<{x.Author.Name}>: {x._message}"); };
             //System.Console.WriteLine(Dns.GetHostName());
 
@@ -36,7 +35,7 @@ namespace ChatServer
 
             foreach (var user in CONNECTIONS)
             {
-                user.TCPConnection.Dispose();
+                user.TCPClient.Dispose();
             }
         }
 
@@ -49,11 +48,19 @@ namespace ChatServer
                 while (true)
                 {
                     Console.WriteLine("Looking for connections...");
-                    //UICONTROLLER.Display(new Message(SERVER_USER, "Looking for connections..."));
-                    var newClient = LISTENER.AcceptTcpClient();
-                    Console.WriteLine("Connected!");
-                    //UICONTROLLER.Display(new Message(SERVER_USER, $"Connection made!"));
-                    Onboard(newClient);
+                    try
+                    {
+                        var newClient = LISTENER.AcceptTcpClient();
+                        Console.WriteLine("Connected succesfully, Establishing session key...");
+                        var connection = new Connection(newClient, Encryption.DiffieHellman.GetSharedKey(newClient));
+                        Console.WriteLine("Session key established");
+                        Onboard(connection);
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine("Connection failed, Error: {0}", e);
+                    }
+                    
                 }
             }
             catch (SocketException e)
@@ -67,20 +74,13 @@ namespace ChatServer
             }
         }
 
-        private static void Onboard(TcpClient newClient)
+        private static void Onboard(Connection connection)
         {
-            Connection newConnection = new Connection(newClient);
-            ServerTransmissionHandler.Send(newConnection, "Sup, welcome to this awesome chat server!");
-            ServerTransmissionHandler.SendOnboardRequest(newConnection, "???");
-            CONNECTIONS.Add(newConnection);
+            ServerTransmissionHandler.Send(connection, "Sup, welcome to this awesome chat server!");
+            ServerTransmissionHandler.SendOnboardRequest(connection, "???");
+            CONNECTIONS.Add(connection);
             Console.WriteLine("Onboard Complete");
-            new Task(() => { ServerTransmissionHandler.RecieveFrom(newConnection); }).Start();
-        
-
-            //UICONTROLLER.Display(new Message(SERVER_USER, $"New user: '{username}' added"));
-
-            // new Task(() => { TRANSMISSION_HANDLER.Send(CONNECTIONS, $"------------------------------ '{username}' has entered the chat ------------------------------"); }).Start();
-            // 
+            new Task(() => { ServerTransmissionHandler.RecieveFrom(connection); }).Start();
         }
     }
 }

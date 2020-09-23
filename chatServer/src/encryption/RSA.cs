@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,62 +7,66 @@ namespace ChatServer.Encryption
 {
     public abstract class RSA
     {
-        public static byte[] Sign(ReadOnlySpan<byte> privKey, byte[] data)
+        public static byte[] Sign(byte[] privKey, byte[] data)
         {
-            var rsa = new RSACryptoServiceProvider(2048);
-            rsa.ImportRSAPrivateKey(privKey, out int i);
-            var signature = rsa.SignData(data, SHA256.Create());
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+               
+                var signature = CreateSignature(privKey, data);
 
-            var signedData = new byte[data.Length + 256];
-            signature.CopyTo(signedData, 0);
-            data.CopyTo(signedData, 256);
+                var signedData = new byte[data.Length + 256];
+                signature.CopyTo(signedData, 0);
+                data.CopyTo(signedData, 256);
 
-            return signedData;
+                return signedData;
+            }
         }
         
-        public static byte[] CreateSignature(ReadOnlySpan<byte> privKey, byte[] data)
+        public static byte[] CreateSignature(byte[] privKey, byte[] data)
         {
-            var rsa = new RSACryptoServiceProvider(2048);
-            rsa.ImportRSAPrivateKey(privKey, out int i);
-            var signature = rsa.SignData(data, SHA256.Create());
-            return signature;
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                rsa.ImportRSAPrivateKey(privKey, out int i);
+                var signature = rsa.SignData(data, SHA256.Create());
+                return signature;
+            }
         }
 
-        public static bool Verify(ReadOnlySpan<byte> publicKey, byte[] signedData)
+        public static bool Verify(byte[] publicKey, byte[] signedData)
         {
-            var rsa = new RSACryptoServiceProvider(2048);
-            rsa.ImportRSAPublicKey(publicKey, out int i);
-
-            var signature = new byte[256];
-            Array.Copy(signedData, 0, signature, 0, 256);
-
-            var data = new byte[signedData.Length - 256];
-            Array.Copy(signedData, 256, data, 0, signedData.Length - 256);
-
-            return rsa.VerifyData(data, SHA256.Create(), signature);
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                rsa.ImportRSAPublicKey(publicKey, out int i);
+                return rsa.VerifyData(GetData(signedData), SHA256.Create(), GetSignature(signedData));
+            }
         }
 
-        public static byte[] RemoveSignature(byte[] signedData)
+        public static byte[] GetData(byte[] signedData)
         {
             var data = new byte[signedData.Length - 256];
             Array.Copy(signedData, 256, data, 0, signedData.Length - 256);
             return data;
         }
 
-        public static RSAParameters GetStoredEncryptedKeyPair(string path, IEnumerable<byte> password, bool includePrivateParameters)
+        public static byte[] GetSignature(byte[] signedData)
         {
-            var rsa = new RSACryptoServiceProvider(2048);
-
-            rsa.ImportCspBlob(AES.Decrypt(File.ReadAllBytes(path), password));
-
-            return rsa.ExportParameters(includePrivateParameters);
+            return signedData.Take(256).ToArray();
         }
 
-        public static void GenerateAndStoreNewEncryptedKeyPair(string path, IEnumerable<byte> password)
+        public static RSACryptoServiceProvider GetStoredEncryptedKeyPair(string path, byte[] password)
         {
             var rsa = new RSACryptoServiceProvider(2048);
-            var keyBlob = rsa.ExportCspBlob(true);
-            File.WriteAllBytes(path, AES.Encrypt(keyBlob, password));
+                rsa.ImportCspBlob(AES.Decrypt(File.ReadAllBytes(path), password));
+                return rsa;
+        }
+
+        public static void GenerateAndStoreNewEncryptedKeyPair(string path, byte[] password)
+        {
+            using (var rsa = new RSACryptoServiceProvider(2048))
+            {
+                var keyBlob = rsa.ExportCspBlob(true);
+                File.WriteAllBytes(path, AES.Encrypt(keyBlob, password));
+            }
         }
     }
 }

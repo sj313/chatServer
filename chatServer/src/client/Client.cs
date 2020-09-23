@@ -2,8 +2,8 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace ChatServer
 {
@@ -12,21 +12,19 @@ namespace ChatServer
         private const Int32 PORT = 9;
         private static readonly string HOSTNAME = Dns.GetHostName();
         public static readonly User USER = new User();
-        public static readonly TcpClient TCP_CLIENT = new TcpClient();
-        public static readonly byte[] SESSION_KEY = new byte[] {0};
-        private static readonly byte[] keyPass = Encoding.UTF8.GetBytes("ClientKeyPassword");
-        const string keyPath = @"..\resources\.clientKeys";
+        public static Connection Connection;
+        //Temp
+        private static readonly byte[] KeyPass = Encoding.UTF8.GetBytes("ClientKeyPassword");
+        private const string KEY_PATH = @"..\resources\.clientKeys";
         public static readonly byte[] SERVER_PASS = Encoding.UTF8.GetBytes("ServerPassword");
-
-
+        public static readonly RSACryptoServiceProvider CLIENT_KEYS = Encryption.KeyStorage.GetKeys(KEY_PATH, KeyPass);
 
         public static void StartClient()
         {
             UIController.Display += (x) => Console.WriteLine(x);
             Console.WriteLine("Please Enter Your Password");
             // var keyPass = Encoding.UTF8.GetBytes(Console.ReadLine());
-            //ClientTransmissionHandler.SetKeys(keyPath, keyPass);
-            USER.ID = ClientTransmissionHandler.ClientKeys.ExportRSAPublicKey();
+            USER.ID = CLIENT_KEYS.ExportRSAPublicKey();
             USER.Name = "Test";
             AttemptConnect();
 
@@ -84,7 +82,7 @@ namespace ChatServer
             }
             finally
             {
-                TCP_CLIENT.Dispose();
+                Connection.TCPClient.Dispose();
             }
 
         }
@@ -92,22 +90,30 @@ namespace ChatServer
         private static void AttemptConnect()
         {
             var success = false;
+            var tcpClient = new TcpClient();
+
             while (!success)
             {
-                UIController.Display("Attempting to connect");
+                UIController.Display("Attempting to connect...");
                 try
                 {
-                    TCP_CLIENT.Connect(HOSTNAME, PORT);
+                    tcpClient.Connect(HOSTNAME, PORT);
+                    UIController.Display("Connected Succesfully, Establishing session key...");
+                    Connection = new Connection(tcpClient, Encryption.DiffieHellman.GetSharedKey(tcpClient));
+                    UIController.Display("Session key established");
                     success = true;
 
                 }
                 catch (SocketException e)
                 {
+                    UIController.Display("Connection failed, retrying in 1 second...");
+                    System.Threading.Thread.Sleep(1000);
                     Console.WriteLine("SocketException: {0}", e);
                 }
-                System.Threading.Thread.Sleep(1000);
             }
-            UIController.Display("Connected Succesfully");
+            
+            
+
         }
 
         // private static void clearLines(int start, int end)

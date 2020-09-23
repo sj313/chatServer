@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using ChatServer.Transmissions;
+using System.Linq;
 
 namespace ChatServer
 {
@@ -62,7 +63,7 @@ namespace ChatServer
                         return;
                     }
 
-                    if (existingConnection.User.ID == response.UserID.ToByteArray())
+                    if (existingConnection.User.ID.SequenceEqual(response.UserID.ToByteArray()))
                     {
                         ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID already connected");
                         return;

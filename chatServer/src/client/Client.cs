@@ -13,7 +13,7 @@ namespace ChatServer
         private static readonly string HOSTNAME = Dns.GetHostName();
         public static readonly User USER = new User();
         public static Connection Connection;
-        //Temp
+        //Temp (should ask user for password)
         private static readonly byte[] KeyPass = Encoding.UTF8.GetBytes("ClientKeyPassword");
         private const string KEY_PATH = @"..\resources\.clientKeys";
         public static readonly byte[] SERVER_PASS = Encoding.UTF8.GetBytes("ServerPassword");
@@ -24,8 +24,9 @@ namespace ChatServer
             UIController.Display += (x) => Console.WriteLine(x);
             Console.WriteLine("Please Enter Your Password");
             // var keyPass = Encoding.UTF8.GetBytes(Console.ReadLine());
-            USER.ID = CLIENT_KEYS.ExportRSAPublicKey();
+            // USER.ID = CLIENT_KEYS.ExportRSAPublicKey();
             USER.Name = "Test";
+
             AttemptConnect();
 
             // var CLEAR_AFTER = 3000;

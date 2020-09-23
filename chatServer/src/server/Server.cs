@@ -79,7 +79,9 @@ namespace ChatServer
         {
             ServerTransmissionHandler.Send(connection, "Sup, welcome to this awesome chat server!");
             ServerTransmissionHandler.SendOnboardRequest(connection, "???");
-            CONNECTIONS.TryAdd(connection.ConnectionID, connection);
+            if(!CONNECTIONS.TryAdd(connection.ConnectionID, connection)) {
+                Console.WriteLine("Connection with this ID alreasy exists");
+            };
             Console.WriteLine("Onboard Complete");
             new Task(() => { ServerTransmissionHandler.RecieveFrom(connection); }).Start();
         }

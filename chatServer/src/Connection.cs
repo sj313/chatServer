@@ -9,7 +9,7 @@ namespace ChatServer
         public byte[] SessionKey;
         public TcpClient TCPClient = new TcpClient();
 
-        public Guid ConnectionID = new Guid();
+        public Guid ConnectionID = Guid.NewGuid();
 
         public bool Onboarded = false;
         public User User = new User();

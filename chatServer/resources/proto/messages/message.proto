@@ -1,7 +1,12 @@
 syntax = "proto3";
+import "packages/google.protobuf.tools/3.13.0/tools/google/protobuf/timestamp.proto";
+//import "timestamp.proto";
+
+
 package ChatServer.Transmissions;
-import "messages/encryptedMessage.proto";
-import "messages/serverMessage.proto";
+import "proto/messages/encryptedMessage.proto";
+import "proto/messages/serverMessage.proto";
+
 
 message Message {
     int64 chatID = 1;
@@ -9,4 +14,5 @@ message Message {
         EncryptedMessage encryptedMessage = 2;
         ServerMessage serverMessage = 3;
     }
+    google.protobuf.Timestamp createdAt = 4;
 }

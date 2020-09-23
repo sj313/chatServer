@@ -86,7 +86,7 @@ namespace ChatServer
             connection.User.Name = response.Name;
             connection.User.ID = response.UserID.ToByteArray();
             ServerTransmissionHandler.SendAll($"------------------------------ '{response.Name}' has entered the chat ------------------------------");
-            
+
         }
     }
 }

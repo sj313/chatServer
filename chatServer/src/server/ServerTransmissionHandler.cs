@@ -30,7 +30,7 @@ namespace ChatServer
 
         public static void SendAll(Transmission transmission)
         {
-            foreach (Connection connection in Server.CONNECTIONS)
+            foreach (Connection connection in Server.CONNECTIONS.Values)
             {
                 if (connection.Onboarded) Send(connection, transmission);
             }
@@ -44,20 +44,37 @@ namespace ChatServer
         public static void Send(Connection connection, Transmission transmission)
         {
             var encryptedTransmission = new EncryptedTransmission(transmission, connection.SessionKey);
+            try
+            {
+                var stream = connection.TCPClient.GetStream();
+                var bytes = encryptedTransmission.ToByteArray();
 
-            var stream = connection.TCPClient.GetStream();
-            var bytes = encryptedTransmission.ToByteArray();
-
-            stream.Write(BitConverter.GetBytes((Int64)bytes.Length), 0, 8);
-            stream.Write(bytes, 0, bytes.Length);
+                stream.Write(BitConverter.GetBytes((Int64)bytes.Length), 0, 8);
+                stream.Write(bytes, 0, bytes.Length);
+            }
+            catch (Exception e) when (e is ObjectDisposedException || e is InvalidOperationException)
+            {
+                Console.WriteLine(e.StackTrace);
+                return;
+            }
+            
         }
 
         public static void RecieveFrom(Connection connection)
         {
             while (true)
             {
+                try
+                {
                 TransmissionsRecieved.Enqueue(new Tuple<Transmission, Connection>(Recieve(connection), connection));
                 transmissionsRecievedSignal.Set();
+                }
+                catch
+                {
+                    Connection temp;
+                    Server.CONNECTIONS.TryRemove(connection.ConnectionID, out temp);
+                    return;
+                }
             }
         }
 

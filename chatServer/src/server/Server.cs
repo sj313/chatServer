@@ -13,7 +13,7 @@ namespace ChatServer
         private static readonly Int32 PORT = 9;
         private static readonly IPAddress LOCAL_ADDRESS = IPAddress.Any;
         private static readonly TcpListener LISTENER = new TcpListener(LOCAL_ADDRESS, PORT);
-        public static readonly ConcurrentBag<Connection> CONNECTIONS = new ConcurrentBag<Connection>();
+        public static readonly ConcurrentDictionary<Guid, Connection> CONNECTIONS = new ConcurrentDictionary<Guid, Connection>();
         public static readonly string SERVER_NAME = "<SuperBot 5000>";
         const string KEY_PATH = @"..\resources\.serverkeys";
         private static readonly byte[] KEY_PASS = Encoding.UTF8.GetBytes("ServerKeyPassword");
@@ -33,9 +33,10 @@ namespace ChatServer
             lookingForConenctions.Wait();
             processTransmisisons.Wait();
 
-            foreach (var user in CONNECTIONS)
+            foreach (var connection in CONNECTIONS)
             {
-                user.TCPClient.Dispose();
+                Connection temp;
+                CONNECTIONS.TryRemove(connection.Value.ConnectionID, out temp);
             }
         }
 
@@ -78,7 +79,7 @@ namespace ChatServer
         {
             ServerTransmissionHandler.Send(connection, "Sup, welcome to this awesome chat server!");
             ServerTransmissionHandler.SendOnboardRequest(connection, "???");
-            CONNECTIONS.Add(connection);
+            CONNECTIONS.TryAdd(connection.ConnectionID, connection);
             Console.WriteLine("Onboard Complete");
             new Task(() => { ServerTransmissionHandler.RecieveFrom(connection); }).Start();
         }

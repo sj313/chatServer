@@ -9,7 +9,7 @@ namespace ChatServer
     {
         public static void Process(Tuple<Transmission, Connection> transmission)
         {
-            if (transmission.Item1.Message != null)
+            if (transmission.Item1.Message != null && transmission.Item2.Onboarded)
             {
                 ProcessMessage(transmission.Item1);
                 return;
@@ -51,18 +51,19 @@ namespace ChatServer
             var connection = transmission.Item2;
             if (response.UserID != null)
             {
-                foreach (Connection existingConnection in Server.CONNECTIONS)
+                try
                 {
-                    try
-                    {
-                        (new RSACryptoServiceProvider(2048)).ImportRSAPublicKey(response.UserID.ToByteArray(), out int i);
-                    }
-                    catch
-                    {
-                        ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID invalid");
-                        return;
-                    }
+                    (new RSACryptoServiceProvider(2048)).ImportRSAPublicKey(response.UserID.ToByteArray(), out int i);
+                }
+                catch
+                {
+                    ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID invalid");
+                    return;
+                }
 
+                foreach (Connection existingConnection in Server.CONNECTIONS.Values)
+                {
+                    
                     if (existingConnection.User.ID.SequenceEqual(response.UserID.ToByteArray()))
                     {
                         ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID already connected");

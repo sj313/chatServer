@@ -1,3 +1,4 @@
+using System;
 using System.Net.Sockets;
 
 namespace ChatServer
@@ -7,6 +8,8 @@ namespace ChatServer
 
         public byte[] SessionKey;
         public TcpClient TCPClient = new TcpClient();
+
+        public Guid ConnectionID = new Guid();
 
         public bool Onboarded = false;
         public User User = new User();

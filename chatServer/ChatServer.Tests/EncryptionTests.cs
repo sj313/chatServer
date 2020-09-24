@@ -31,11 +31,10 @@ namespace ChatServer.Tests
             var rsa = RSA.GetStoredEncryptedKeyPair(KEYBLOB_PATH, rsaPassword);
 
             var message = Encoding.Unicode.GetBytes(MESSAGE);
-            var signedMessage = RSA.Sign(rsa.ExportRSAPrivateKey(), message);
+            var signature = RSA.CreateSignature(rsa.ExportRSAPrivateKey(), message);
 
 
-            Assert.Equal(message, RSA.GetData(signedMessage));
-            Assert.True(RSA.Verify(rsa.ExportRSAPublicKey(), signedMessage));
+            Assert.True(RSA.Verify(rsa.ExportRSAPublicKey(), message, signature));
         }
     }
 }

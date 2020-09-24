@@ -7,21 +7,6 @@ namespace ChatServer.Encryption
 {
     public abstract class RSA
     {
-        public static byte[] Sign(byte[] privKey, byte[] data)
-        {
-            using (var rsa = new RSACryptoServiceProvider(2048))
-            {
-               
-                var signature = CreateSignature(privKey, data);
-
-                var signedData = new byte[data.Length + 256];
-                signature.CopyTo(signedData, 0);
-                data.CopyTo(signedData, 256);
-
-                return signedData;
-            }
-        }
-        
         public static byte[] CreateSignature(byte[] privKey, byte[] data)
         {
             using (var rsa = new RSACryptoServiceProvider(2048))
@@ -47,11 +32,6 @@ namespace ChatServer.Encryption
                     return false;
                 }
             }
-        }
-
-        public static byte[] GetSignature(byte[] signedData)
-        {
-            return signedData.Take(256).ToArray();
         }
 
         public static RSACryptoServiceProvider GetStoredEncryptedKeyPair(string path, byte[] password)

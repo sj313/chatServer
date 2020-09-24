@@ -112,10 +112,10 @@ namespace ChatServer.Server
             }
         }
     
-        public static void SendOnboardRequest(Connection connection, string message)
+        public static void SendOnboardRequest(Connection connection, Errors.Error error)
         {
             var onboardingRequest = new OnboardingRequest();
-            var request = new Request(onboardingRequest);
+            var request = new Request(onboardingRequest, (int)error);
             var transmission = new Transmission(request, Server.SERVER_KEYS.ExportRSAPrivateKey(), Server.SERVER_KEYS.ExportRSAPublicKey());
             Send(connection, transmission);
         }

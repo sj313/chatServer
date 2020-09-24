@@ -57,7 +57,7 @@ namespace ChatServer.Server
                 }
                 catch
                 {
-                    ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID invalid");
+                    ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingInvalidUserID);
                     return;
                 }
 
@@ -66,20 +66,22 @@ namespace ChatServer.Server
                     
                     if (existingConnection.User.ID.SequenceEqual(response.UserID.ToByteArray()))
                     {
-                        ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID already connected");
+                        // TODO Allow multiple connections but make sure signature is verified
+                        ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingExistingConnectionWithUserID);
                         return;
                     }
                 }
             }
             else
             {
-                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "UserID not provided");
+                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingNoUserID);
                 return;
             }
 
+            // TODO: Check name doesn't already exist for user with this ID
             if (String.IsNullOrWhiteSpace(response.Name))
             {
-                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, "Name not provided");
+                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingNoName);
                 return;
             }
 

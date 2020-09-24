@@ -1,3 +1,5 @@
+using System;
+
 namespace ChatServer.Transmissions {
     public sealed partial class Request
     {
@@ -5,6 +7,13 @@ namespace ChatServer.Transmissions {
         {
             OnboardingRequest = onboardingRequest;
         }
+
+        public Request(OnboardingRequest onboardingRequest, int errorID)
+        {
+            ErrorID = errorID;
+            OnboardingRequest = onboardingRequest;
+        }
+
         public Request(OnboardingResponse onboardingResponse)
         {
             OnboardingResponse = onboardingResponse;

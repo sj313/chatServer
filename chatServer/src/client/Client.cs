@@ -105,11 +105,11 @@ namespace ChatServer.Client
                     success = true;
 
                 }
-                catch (SocketException e)
+                catch (SocketException)
                 {
                     UIController.Display("Connection failed, retrying in 1 second...");
                     System.Threading.Thread.Sleep(1000);
-                    Console.WriteLine("SocketException: {0}", e);
+                    // Console.WriteLine("SocketException: {0}", e);
                 }
             }
 

@@ -8,7 +8,7 @@ namespace ChatServer.DataLayer
     {
         const string SERVER_NAME = "<SERVER>";
 
-        public ChatServerContext() : base(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ChatServer.DataLayer.ChatServerContext;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False")
+        public ChatServerContext() : base(@"Server=localhost;Database=ChatServer;Trusted_Connection=True;")
         {
         }
 

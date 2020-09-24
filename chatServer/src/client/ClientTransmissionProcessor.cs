@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using ChatServer.Transmissions;
 
@@ -53,7 +54,20 @@ namespace ChatServer.Client
         private static void ProcessOnboarding(Transmission transmission)
         {
             //Temp
-            ClientTransmissionHandler.SendOnboardingResponse();
+            if (transmission.Request.ErrorID == (int)Errors.Error.NoError)
+            {
+                Console.WriteLine("Received onboarding request, responding...");
+                ClientTransmissionHandler.SendOnboardingResponse();
+            }
+            else
+            {
+                Errors.Error error = (Errors.Error)transmission.Request.ErrorID;
+                Console.WriteLine("Received onboarding request with error: {0}", Errors.ErrorMsg[error]);
+                Console.WriteLine("Resending onboarding response in 1 second...");
+                System.Threading.Thread.Sleep(1000);
+                ClientTransmissionHandler.SendOnboardingResponse();
+            }
+
         }
     }
 }

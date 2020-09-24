@@ -6,6 +6,7 @@
 *.code-workspace
 */bin
 */obj
+**/DbConfig.json
 resources/*
 !resources/proto
 # Local History for Visual Studio Code

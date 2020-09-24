@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "ChatServer": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ChatServer;Integrated Security=True;Connect Timeout=1;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+  }
+}

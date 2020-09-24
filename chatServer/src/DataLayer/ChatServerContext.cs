@@ -1,14 +1,17 @@
 using System.Data.Entity;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+
 
 namespace ChatServer.DataLayer
 {
-    //[DbConfigurationType(typeof(MySqlEFConfiguration))]
-
     public class ChatServerContext : DbContext
     {
         const string SERVER_NAME = "<SERVER>";
+        const string CONNECTION_NAME = "ChatServer";
+        public static string CONNECTION_STRING = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("./DataLayer/DbConfig.json").Build().GetConnectionString(CONNECTION_NAME);
 
-        public ChatServerContext() : base(@"Server=localhost;Database=ChatServer;Trusted_Connection=True;")
+        public ChatServerContext() : base(CONNECTION_STRING)
         {
         }
 

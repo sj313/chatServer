@@ -19,12 +19,21 @@ namespace ChatServer.Transmissions {
             SenderID = ByteString.CopyFrom(pubKey);
         }
 
+        public Transmission(Response response, byte[] privKey, byte[] pubKey)
+        {
+            Response = response;
+            Signature = ByteString.CopyFrom(RSA.CreateSignature(privKey, Response.ToByteArray()));
+            SenderID = ByteString.CopyFrom(pubKey);
+        }
+
         public bool Verify()
         {
-            if (Message.IsInitialized())
-                return RSA.Verify(SenderID.ToByteArray(), Message.ToByteArray());
-            if (Request.IsInitialized())
-                return RSA.Verify(SenderID.ToByteArray(), Request.ToByteArray());
+            if (Message != null)
+                return RSA.Verify(SenderID.ToByteArray(), Message.ToByteArray(), Signature.ToByteArray());
+            if (Request != null)
+                return RSA.Verify(SenderID.ToByteArray(), Request.ToByteArray(), Signature.ToByteArray());
+            if (Response != null)
+                return RSA.Verify(SenderID.ToByteArray(), Response.ToByteArray(), Signature.ToByteArray());
             return false;
         }
 

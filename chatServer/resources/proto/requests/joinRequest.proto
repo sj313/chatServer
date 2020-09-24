@@ -1,4 +1,4 @@
 syntax = "proto3";
 package ChatServer.Transmissions;
 
-message OnboardingRequest{}
+message JoinRequest {}

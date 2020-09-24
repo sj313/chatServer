@@ -12,34 +12,29 @@ namespace ChatServer.Server
         private static readonly ConcurrentQueue<Tuple<Transmission, Connection>> TransmissionsRecieved = new ConcurrentQueue<Tuple<Transmission, Connection>>();
         private static readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
 
-        public static Transmission CreateTransmission(string messageString)
+        private static Message CreateMessage(string messageString)
         {
             var messageBytes = Encoding.UTF8.GetBytes(messageString);
             var serverMessage = new ServerMessage(messageBytes);
-            var message = new Message(0, serverMessage);
+            return new Message(0, serverMessage);
+        }
+
+        private static Transmission CreateTransmission(Message message)
+        {
             return new Transmission(message, Server.SERVER_KEYS.ExportRSAPrivateKey(), Server.SERVER_KEYS.ExportRSAPublicKey());
         }
+
+        private static Transmission CreateTransmission(Request request)
+        {
+            return new Transmission(request, Server.SERVER_KEYS.ExportRSAPrivateKey(), Server.SERVER_KEYS.ExportRSAPublicKey());
+        }
+
+        private static Transmission CreateTransmission(Response response)
+        {
+            return new Transmission(response, Server.SERVER_KEYS.ExportRSAPrivateKey(), Server.SERVER_KEYS.ExportRSAPublicKey());
+        }
         
-        public static void SendAll(string messageString)
-        {
-            SendAll(CreateTransmission(messageString));
-            
-        }
-
-        public static void SendAll(Transmission transmission)
-        {
-            foreach (Connection connection in Server.CONNECTIONS.Values)
-            {
-                if (connection.Onboarded) Send(connection, transmission);
-            }
-        }
-
-        public static void Send(Connection connection, string messageString)
-        {
-            Send(connection, CreateTransmission(messageString));
-        }
-
-        public static void Send(Connection connection, Transmission transmission)
+        private static void Send(Connection connection, Transmission transmission)
         {
             var encryptedTransmission = new EncryptedTransmission(transmission, connection.SessionKey);
             try
@@ -56,6 +51,58 @@ namespace ChatServer.Server
                 return;
             }
             
+        }
+
+        private static void Send(Connection connection, Message message)
+        {
+            Send(connection, CreateTransmission(message));
+        }
+
+        private static void Send(Connection connection, Request request)
+        {
+            Send(connection, CreateTransmission(request));
+        }
+
+        private static void Send(Connection connection, Response response)
+        {
+            Send(connection, CreateTransmission(response));
+        }
+
+        public static void Send(Connection connection, string messageString)
+        {
+            Send(connection, CreateTransmission(CreateMessage(messageString)));
+        }
+
+        public static void SendAll(Transmission transmission)
+        {
+            foreach (Connection connection in Server.CONNECTIONS.Values)
+            {
+                if (connection.Joined) Send(connection, transmission);
+            }
+        }
+
+        private static void SendAll(Message message)
+        {
+            SendAll(CreateTransmission(message));
+        }
+        private static void SendAll(Request request)
+        {
+            SendAll(CreateTransmission(request));
+        }
+        private static void SendAll(Response response)
+        {
+            SendAll(CreateTransmission(response));
+        }
+
+        public static void SendAll(string messageString)
+        {
+            SendAll(CreateTransmission(CreateMessage(messageString)));
+        }
+
+        public static void SendResponse(Connection connection, Errors.Error error)
+        {
+            var response = new Response(error);
+            Send(connection, CreateTransmission(response));
         }
 
         public static void RecieveFrom(Connection connection)
@@ -76,7 +123,7 @@ namespace ChatServer.Server
             }
         }
 
-        public static Transmission Recieve(Connection connection)
+        private static Transmission Recieve(Connection connection)
         {
             var stream = connection.TCPClient.GetStream();
 
@@ -111,14 +158,5 @@ namespace ChatServer.Server
                 }
             }
         }
-    
-        public static void SendOnboardRequest(Connection connection, Errors.Error error)
-        {
-            var onboardingRequest = new OnboardingRequest();
-            var request = new Request(onboardingRequest, (int)error);
-            var transmission = new Transmission(request, Server.SERVER_KEYS.ExportRSAPrivateKey(), Server.SERVER_KEYS.ExportRSAPublicKey());
-            Send(connection, transmission);
-        }
-
     }
 }

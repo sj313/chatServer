@@ -22,7 +22,7 @@ namespace ChatServer.Client
         public static void StartClient()
         {
             UIController.Display += (x) => Console.WriteLine(x);
-            Console.WriteLine("Please Enter Your Password");
+            // Console.WriteLine("Please Enter Your Password");
             // var keyPass = Encoding.UTF8.GetBytes(Console.ReadLine());
             // USER.ID = CLIENT_KEYS.ExportRSAPublicKey();
             USER.Name = "Test";
@@ -60,22 +60,39 @@ namespace ChatServer.Client
 
             try
             {
-                Task recievingMessages = new Task(() => { ClientTransmissionHandler.RecieveFrom(); });
 
-                Task displayingMessages = new Task(() =>
+                Task waitForJoinConfirmation = new Task(() =>
+                {
+                    while (!Connection.Joined)
+                    {
+                        UIController.Display("Sending join request...");
+                        ClientTransmissionHandler.SendJoinRequest();
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    UIController.Display("Received join confirmation");
+                });
+
+                Task recievingTransmissions = new Task(() => { ClientTransmissionHandler.RecieveFrom(); });
+
+                Task processTransmissions = new Task(() =>
                 {
                     ClientTransmissionHandler.OnTransmissionRecieved();
                 });
 
                 Task gettingInput = new Task(() => { UIController.getInput((x) => { ClientTransmissionHandler.Send(x); }); });
 
-                displayingMessages.Start();
-                gettingInput.Start();
-                recievingMessages.Start();
+                
+                recievingTransmissions.Start();
+                processTransmissions.Start();
 
-                displayingMessages.Wait();
+                waitForJoinConfirmation.Start();
+                waitForJoinConfirmation.Wait();
+
+                gettingInput.Start();
+
+                processTransmissions.Wait();
                 gettingInput.Wait();
-                recievingMessages.Wait();
+                recievingTransmissions.Wait();
             }
             catch (Exception e)
             {
@@ -99,7 +116,8 @@ namespace ChatServer.Client
                 try
                 {
                     tcpClient.Connect(HOSTNAME, PORT);
-                    UIController.Display("Connected Succesfully, Establishing session key...");
+                    UIController.Display("Connected Succesfully");
+                    UIController.Display("Establishing session key...");
                     Connection = new Connection(tcpClient, Encryption.DiffieHellman.GetSharedKey(tcpClient));
                     UIController.Display("Session key established");
                     success = true;
@@ -112,9 +130,11 @@ namespace ChatServer.Client
                     // Console.WriteLine("SocketException: {0}", e);
                 }
             }
+        }
 
-
-
+        private static void AttemptJoin()
+        {
+            
         }
 
         // private static void clearLines(int start, int end)

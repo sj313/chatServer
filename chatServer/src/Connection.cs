@@ -11,7 +11,7 @@ namespace ChatServer
 
         public Guid ConnectionID = Guid.NewGuid();
 
-        public bool Onboarded = false;
+        public bool Joined = false;
         public User User = new User();
 
         public Connection(TcpClient tcpClient, byte[] sessionKey)

@@ -25,17 +25,14 @@ namespace ChatServer.Transmissions {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Chxwcm90by9yZXF1ZXN0cy9yZXF1ZXN0LnByb3RvEhhDaGF0U2VydmVyLlRy",
-            "YW5zbWlzc2lvbnMaJnByb3RvL3JlcXVlc3RzL29uYm9hcmRpbmdSZXF1ZXN0",
-            "LnByb3RvGidwcm90by9yZXF1ZXN0cy9vbmJvYXJkaW5nUmVzcG9uc2UucHJv",
-            "dG8iuwEKB1JlcXVlc3QSDwoHZXJyb3JJRBgBIAEoBRJIChFvbmJvYXJkaW5n",
-            "UmVxdWVzdBgCIAEoCzIrLkNoYXRTZXJ2ZXIuVHJhbnNtaXNzaW9ucy5PbmJv",
-            "YXJkaW5nUmVxdWVzdEgAEkoKEk9uYm9hcmRpbmdSZXNwb25zZRgDIAEoCzIs",
-            "LkNoYXRTZXJ2ZXIuVHJhbnNtaXNzaW9ucy5PbmJvYXJkaW5nUmVzcG9uc2VI",
-            "AEIJCgdyZXF1ZXN0YgZwcm90bzM="));
+            "YW5zbWlzc2lvbnMaIHByb3RvL3JlcXVlc3RzL2pvaW5SZXF1ZXN0LnByb3Rv",
+            "IlIKB1JlcXVlc3QSPAoLam9pblJlcXVlc3QYASABKAsyJS5DaGF0U2VydmVy",
+            "LlRyYW5zbWlzc2lvbnMuSm9pblJlcXVlc3RIAEIJCgdyZXF1ZXN0YgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::ChatServer.Transmissions.OnboardingRequestReflection.Descriptor, global::ChatServer.Transmissions.OnboardingResponseReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::ChatServer.Transmissions.JoinRequestReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Request), global::ChatServer.Transmissions.Request.Parser, new[]{ "ErrorID", "OnboardingRequest", "OnboardingResponse" }, new[]{ "Request" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Request), global::ChatServer.Transmissions.Request.Parser, new[]{ "JoinRequest" }, new[]{ "Request" }, null, null, null)
           }));
     }
     #endregion
@@ -71,13 +68,9 @@ namespace ChatServer.Transmissions {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Request(Request other) : this() {
-      errorID_ = other.errorID_;
       switch (other.RequestCase) {
-        case RequestOneofCase.OnboardingRequest:
-          OnboardingRequest = other.OnboardingRequest.Clone();
-          break;
-        case RequestOneofCase.OnboardingResponse:
-          OnboardingResponse = other.OnboardingResponse.Clone();
+        case RequestOneofCase.JoinRequest:
+          JoinRequest = other.JoinRequest.Clone();
           break;
       }
 
@@ -89,36 +82,14 @@ namespace ChatServer.Transmissions {
       return new Request(this);
     }
 
-    /// <summary>Field number for the "errorID" field.</summary>
-    public const int ErrorIDFieldNumber = 1;
-    private int errorID_;
+    /// <summary>Field number for the "joinRequest" field.</summary>
+    public const int JoinRequestFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int ErrorID {
-      get { return errorID_; }
-      set {
-        errorID_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "onboardingRequest" field.</summary>
-    public const int OnboardingRequestFieldNumber = 2;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::ChatServer.Transmissions.OnboardingRequest OnboardingRequest {
-      get { return requestCase_ == RequestOneofCase.OnboardingRequest ? (global::ChatServer.Transmissions.OnboardingRequest) request_ : null; }
+    public global::ChatServer.Transmissions.JoinRequest JoinRequest {
+      get { return requestCase_ == RequestOneofCase.JoinRequest ? (global::ChatServer.Transmissions.JoinRequest) request_ : null; }
       set {
         request_ = value;
-        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.OnboardingRequest;
-      }
-    }
-
-    /// <summary>Field number for the "OnboardingResponse" field.</summary>
-    public const int OnboardingResponseFieldNumber = 3;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::ChatServer.Transmissions.OnboardingResponse OnboardingResponse {
-      get { return requestCase_ == RequestOneofCase.OnboardingResponse ? (global::ChatServer.Transmissions.OnboardingResponse) request_ : null; }
-      set {
-        request_ = value;
-        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.OnboardingResponse;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.JoinRequest;
       }
     }
 
@@ -126,8 +97,7 @@ namespace ChatServer.Transmissions {
     /// <summary>Enum of possible cases for the "request" oneof.</summary>
     public enum RequestOneofCase {
       None = 0,
-      OnboardingRequest = 2,
-      OnboardingResponse = 3,
+      JoinRequest = 1,
     }
     private RequestOneofCase requestCase_ = RequestOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -154,9 +124,7 @@ namespace ChatServer.Transmissions {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (ErrorID != other.ErrorID) return false;
-      if (!object.Equals(OnboardingRequest, other.OnboardingRequest)) return false;
-      if (!object.Equals(OnboardingResponse, other.OnboardingResponse)) return false;
+      if (!object.Equals(JoinRequest, other.JoinRequest)) return false;
       if (RequestCase != other.RequestCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -164,9 +132,7 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (ErrorID != 0) hash ^= ErrorID.GetHashCode();
-      if (requestCase_ == RequestOneofCase.OnboardingRequest) hash ^= OnboardingRequest.GetHashCode();
-      if (requestCase_ == RequestOneofCase.OnboardingResponse) hash ^= OnboardingResponse.GetHashCode();
+      if (requestCase_ == RequestOneofCase.JoinRequest) hash ^= JoinRequest.GetHashCode();
       hash ^= (int) requestCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -184,17 +150,9 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (ErrorID != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(ErrorID);
-      }
-      if (requestCase_ == RequestOneofCase.OnboardingRequest) {
-        output.WriteRawTag(18);
-        output.WriteMessage(OnboardingRequest);
-      }
-      if (requestCase_ == RequestOneofCase.OnboardingResponse) {
-        output.WriteRawTag(26);
-        output.WriteMessage(OnboardingResponse);
+      if (requestCase_ == RequestOneofCase.JoinRequest) {
+        output.WriteRawTag(10);
+        output.WriteMessage(JoinRequest);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -205,17 +163,9 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (ErrorID != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(ErrorID);
-      }
-      if (requestCase_ == RequestOneofCase.OnboardingRequest) {
-        output.WriteRawTag(18);
-        output.WriteMessage(OnboardingRequest);
-      }
-      if (requestCase_ == RequestOneofCase.OnboardingResponse) {
-        output.WriteRawTag(26);
-        output.WriteMessage(OnboardingResponse);
+      if (requestCase_ == RequestOneofCase.JoinRequest) {
+        output.WriteRawTag(10);
+        output.WriteMessage(JoinRequest);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -226,14 +176,8 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (ErrorID != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(ErrorID);
-      }
-      if (requestCase_ == RequestOneofCase.OnboardingRequest) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OnboardingRequest);
-      }
-      if (requestCase_ == RequestOneofCase.OnboardingResponse) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OnboardingResponse);
+      if (requestCase_ == RequestOneofCase.JoinRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(JoinRequest);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -246,21 +190,12 @@ namespace ChatServer.Transmissions {
       if (other == null) {
         return;
       }
-      if (other.ErrorID != 0) {
-        ErrorID = other.ErrorID;
-      }
       switch (other.RequestCase) {
-        case RequestOneofCase.OnboardingRequest:
-          if (OnboardingRequest == null) {
-            OnboardingRequest = new global::ChatServer.Transmissions.OnboardingRequest();
+        case RequestOneofCase.JoinRequest:
+          if (JoinRequest == null) {
+            JoinRequest = new global::ChatServer.Transmissions.JoinRequest();
           }
-          OnboardingRequest.MergeFrom(other.OnboardingRequest);
-          break;
-        case RequestOneofCase.OnboardingResponse:
-          if (OnboardingResponse == null) {
-            OnboardingResponse = new global::ChatServer.Transmissions.OnboardingResponse();
-          }
-          OnboardingResponse.MergeFrom(other.OnboardingResponse);
+          JoinRequest.MergeFrom(other.JoinRequest);
           break;
       }
 
@@ -278,26 +213,13 @@ namespace ChatServer.Transmissions {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            ErrorID = input.ReadInt32();
-            break;
-          }
-          case 18: {
-            global::ChatServer.Transmissions.OnboardingRequest subBuilder = new global::ChatServer.Transmissions.OnboardingRequest();
-            if (requestCase_ == RequestOneofCase.OnboardingRequest) {
-              subBuilder.MergeFrom(OnboardingRequest);
+          case 10: {
+            global::ChatServer.Transmissions.JoinRequest subBuilder = new global::ChatServer.Transmissions.JoinRequest();
+            if (requestCase_ == RequestOneofCase.JoinRequest) {
+              subBuilder.MergeFrom(JoinRequest);
             }
             input.ReadMessage(subBuilder);
-            OnboardingRequest = subBuilder;
-            break;
-          }
-          case 26: {
-            global::ChatServer.Transmissions.OnboardingResponse subBuilder = new global::ChatServer.Transmissions.OnboardingResponse();
-            if (requestCase_ == RequestOneofCase.OnboardingResponse) {
-              subBuilder.MergeFrom(OnboardingResponse);
-            }
-            input.ReadMessage(subBuilder);
-            OnboardingResponse = subBuilder;
+            JoinRequest = subBuilder;
             break;
           }
         }
@@ -314,26 +236,13 @@ namespace ChatServer.Transmissions {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8: {
-            ErrorID = input.ReadInt32();
-            break;
-          }
-          case 18: {
-            global::ChatServer.Transmissions.OnboardingRequest subBuilder = new global::ChatServer.Transmissions.OnboardingRequest();
-            if (requestCase_ == RequestOneofCase.OnboardingRequest) {
-              subBuilder.MergeFrom(OnboardingRequest);
+          case 10: {
+            global::ChatServer.Transmissions.JoinRequest subBuilder = new global::ChatServer.Transmissions.JoinRequest();
+            if (requestCase_ == RequestOneofCase.JoinRequest) {
+              subBuilder.MergeFrom(JoinRequest);
             }
             input.ReadMessage(subBuilder);
-            OnboardingRequest = subBuilder;
-            break;
-          }
-          case 26: {
-            global::ChatServer.Transmissions.OnboardingResponse subBuilder = new global::ChatServer.Transmissions.OnboardingResponse();
-            if (requestCase_ == RequestOneofCase.OnboardingResponse) {
-              subBuilder.MergeFrom(OnboardingResponse);
-            }
-            input.ReadMessage(subBuilder);
-            OnboardingResponse = subBuilder;
+            JoinRequest = subBuilder;
             break;
           }
         }

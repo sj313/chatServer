@@ -1,7 +1,5 @@
 using System;
-using System.Security.Cryptography;
 using ChatServer.Transmissions;
-using System.Linq;
 
 namespace ChatServer.Server
 {
@@ -9,7 +7,17 @@ namespace ChatServer.Server
     {
         public static void Process(Tuple<Transmission, Connection> transmission)
         {
-            if (transmission.Item1.Message != null && transmission.Item2.Onboarded)
+            if (transmission.Item1.SenderID == null)
+            {
+                // TODO: Process error
+                return;
+            }
+            if (!transmission.Item1.Verify())
+            {
+                //TODO: Process error
+                return;
+            }
+            if (transmission.Item1.Message != null && transmission.Item2.Joined)
             {
                 ProcessMessage(transmission.Item1);
                 return;
@@ -19,7 +27,11 @@ namespace ChatServer.Server
                 ProcessRequest(transmission);
                 return;
             }
-
+            if (transmission.Item1.Response != null)
+            {
+                ProcessResponse(transmission);
+                return;
+            }
         }
 
         private static void ProcessMessage(Transmission transmission)
@@ -34,62 +46,27 @@ namespace ChatServer.Server
         private static void ProcessRequest(Tuple<Transmission, Connection> transmission)
         {
             var request = transmission.Item1.Request;
-            if (request.OnboardingResponse != null)
+            var connection = transmission.Item2;
+            if (request.JoinRequest != null)
             {
-                Onboard(transmission);
+                Console.WriteLine("Received Join Request");
+                connection.User.ID = transmission.Item1.SenderID.ToByteArray();
+                // TODO: Set name if already exists
+                connection.User.Name = "TempName";
+                connection.Joined = true;
+                ServerTransmissionHandler.SendResponse(transmission.Item2, Errors.Error.NoError);
+                ServerTransmissionHandler.SendAll($"-------------------User: {connection.User.Name} has joined--------------------");
             }
+        }
+
+        private static void ProcessResponse(Tuple<Transmission, Connection> transmission)
+        {
+            return;
         }
 
         private static void Rebroadcast(Transmission transmission)
         {
             ServerTransmissionHandler.SendAll(transmission);
-        }
-
-        private static void Onboard(Tuple<Transmission, Connection> transmission)
-        {
-            var response = transmission.Item1.Request.OnboardingResponse;
-            var connection = transmission.Item2;
-            if (response.UserID != null)
-            {
-                try
-                {
-                    (new RSACryptoServiceProvider(2048)).ImportRSAPublicKey(response.UserID.ToByteArray(), out int i);
-                }
-                catch
-                {
-                    ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingInvalidUserID);
-                    return;
-                }
-
-                foreach (Connection existingConnection in Server.CONNECTIONS.Values)
-                {
-                    
-                    if (existingConnection.User.ID.SequenceEqual(response.UserID.ToByteArray()))
-                    {
-                        // TODO Allow multiple connections but make sure signature is verified
-                        ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingExistingConnectionWithUserID);
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingNoUserID);
-                return;
-            }
-
-            // TODO: Check name doesn't already exist for user with this ID
-            if (String.IsNullOrWhiteSpace(response.Name))
-            {
-                ServerTransmissionHandler.SendOnboardRequest(transmission.Item2, Errors.Error.OnboardingNoName);
-                return;
-            }
-
-            connection.Onboarded = true;
-            connection.User.Name = response.Name;
-            connection.User.ID = response.UserID.ToByteArray();
-            ServerTransmissionHandler.SendAll($"------------------------------ '{response.Name}' has entered the chat ------------------------------");
-
         }
     }
 }

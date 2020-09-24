@@ -1,12 +1,9 @@
 syntax = "proto3";
 package ChatServer.Transmissions;
-import "proto/requests/onboardingRequest.proto";
-import "proto/requests/onboardingResponse.proto";
+import "proto/requests/joinRequest.proto";
 
 message Request {
-    int32 errorID = 1;
     oneof request {
-        OnboardingRequest onboardingRequest = 2;
-        OnboardingResponse OnboardingResponse = 3;
+        JoinRequest joinRequest = 1;
     }
 }

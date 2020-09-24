@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace ChatServer
+namespace ChatServer.Server
 {
     public class Server
     {

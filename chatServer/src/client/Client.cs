@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace ChatServer
+namespace ChatServer.Client
 {
     public abstract class Client
     {

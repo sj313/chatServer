@@ -1,8 +1,7 @@
-using System;
 using System.Text;
 using ChatServer.Transmissions;
 
-namespace ChatServer
+namespace ChatServer.Client
 {
     public abstract class ClientTransmissionProcessor
     {

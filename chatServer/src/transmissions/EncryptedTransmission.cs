@@ -1,4 +1,3 @@
-using System;
 using ChatServer.Encryption;
 using Google.Protobuf;
 

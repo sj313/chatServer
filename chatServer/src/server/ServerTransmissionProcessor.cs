@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using ChatServer.Transmissions;
 using System.Linq;
 
-namespace ChatServer
+namespace ChatServer.Server
 {
     public abstract class ServerTransmissionProcessor
     {

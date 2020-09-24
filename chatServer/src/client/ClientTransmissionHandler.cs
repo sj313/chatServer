@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Concurrent;
-using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using ChatServer.Transmissions;
 using Google.Protobuf;
 
-namespace ChatServer
+namespace ChatServer.Client
 {
     public abstract class ClientTransmissionHandler
     {

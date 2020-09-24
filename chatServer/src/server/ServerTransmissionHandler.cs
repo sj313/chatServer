@@ -5,7 +5,7 @@ using System.Threading;
 using ChatServer.Transmissions;
 using Google.Protobuf;
 
-namespace ChatServer
+namespace ChatServer.Server
 {
     public abstract class ServerTransmissionHandler
     {

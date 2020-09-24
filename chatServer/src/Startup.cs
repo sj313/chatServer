@@ -3,6 +3,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+
 namespace ChatServer
 {
     public class Startup
@@ -12,18 +13,18 @@ namespace ChatServer
             int numberOfClients;
             if (args.Length == 1 && args[0].Equals("server"))
             {
-                Server.StartServer();
+                Server.Server.StartServer();
                 return;
             }
             else if (args.Length == 1 && args[0].Equals("client"))
             {
-                Client.StartClient();
+                Client.Client.StartClient();
                 return;
             }
             else if (args.Length == 3 && args[0].Equals("server") && args[1].Equals("client") && int.TryParse(args[2], out numberOfClients))
             {
                 StartNClients(numberOfClients);
-                Server.StartServer();
+                Server.Server.StartServer();
                 return;
             }
             else if (args.Length == 2 && args[0].Equals("client") && int.TryParse(args[1], out numberOfClients))

@@ -32,20 +32,21 @@ namespace ChatServer.Encryption
             }
         }
 
-        public static bool Verify(byte[] publicKey, byte[] signedData)
+        public static bool Verify(byte[] publicKey, byte[] data, byte[] signature)
         {
             using (var rsa = new RSACryptoServiceProvider(2048))
             {
-                rsa.ImportRSAPublicKey(publicKey, out int i);
-                return rsa.VerifyData(GetData(signedData), SHA256.Create(), GetSignature(signedData));
+                try
+                {
+                    rsa.ImportRSAPublicKey(publicKey, out int i);
+                    return rsa.VerifyData(data, SHA256.Create(), signature);
+                }
+                catch (CryptographicException e)
+                {
+                    Console.WriteLine(e.StackTrace);
+                    return false;
+                }
             }
-        }
-
-        public static byte[] GetData(byte[] signedData)
-        {
-            var data = new byte[signedData.Length - 256];
-            Array.Copy(signedData, 256, data, 0, signedData.Length - 256);
-            return data;
         }
 
         public static byte[] GetSignature(byte[] signedData)

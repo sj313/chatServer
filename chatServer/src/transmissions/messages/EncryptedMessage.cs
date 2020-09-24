@@ -16,12 +16,7 @@ namespace ChatServer.Transmissions
             get { return this.Message.ToByteArray(); }
             set { this.Message = ByteString.CopyFrom(value); }
         }
-
-        public byte[] _user_id
-        {
-            get { return this.UserID.ToByteArray(); }
-            set { this.UserID = ByteString.CopyFrom(value); }
-        }
+        
         public EncryptedMessage(byte[] message, byte[] key)
         {
             Message = ByteString.CopyFrom(AES.Encrypt(message, key));

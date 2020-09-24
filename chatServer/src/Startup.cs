@@ -59,7 +59,7 @@ namespace ChatServer
                 message.ServerMessage = new Transmissions.ServerMessage() { _message = "hi this is the server".asBtyeMessage() };
 
                 var message2 = new Transmissions.Message();
-                message2.EncryptedMessage = new Transmissions.EncryptedMessage() { _user_id = user.ID, _message = "hi this is scott".asBtyeMessage() };
+                message2.EncryptedMessage = new Transmissions.EncryptedMessage() { _message = "hi this is scott".asBtyeMessage() };
 
                 chat.Messages = new[] { message };
 

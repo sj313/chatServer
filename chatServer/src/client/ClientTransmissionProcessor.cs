@@ -18,6 +18,11 @@ namespace ChatServer.Client
                 ProcessRequest(transmission);
                 return;
             }
+            if (transmission.Response != null)
+            {
+                ProcessResponse(transmission);
+                return;
+            }
 
         }
 
@@ -35,6 +40,10 @@ namespace ChatServer.Client
             }
         }
 
+        private static void ProcessRequest(Transmission transmission)
+        {
+            return;
+        }
         private static void DecryptAndDisplay(Transmission transmission)
         {
             //Temp
@@ -42,32 +51,11 @@ namespace ChatServer.Client
             UIController.Display(message);
         }
 
-        private static void ProcessRequest(Transmission transmission)
+        private static void ProcessResponse(Transmission transmission)
         {
-            var request = transmission.Request;
-            if (request.OnboardingRequest != null)
-            {
-                ProcessOnboarding(transmission);
-            }
-        }
-
-        private static void ProcessOnboarding(Transmission transmission)
-        {
-            //Temp
-            if (transmission.Request.ErrorID == (int)Errors.Error.NoError)
-            {
-                Console.WriteLine("Received onboarding request, responding...");
-                ClientTransmissionHandler.SendOnboardingResponse();
-            }
-            else
-            {
-                Errors.Error error = (Errors.Error)transmission.Request.ErrorID;
-                Console.WriteLine("Received onboarding request with error: {0}", Errors.ErrorMsg[error]);
-                Console.WriteLine("Resending onboarding response in 1 second...");
-                System.Threading.Thread.Sleep(1000);
-                ClientTransmissionHandler.SendOnboardingResponse();
-            }
-
+            if (transmission.Response.ErrorID == (int)Errors.Error.NoError)
+                Client.Connection.Joined = true;
+            return;
         }
     }
 }

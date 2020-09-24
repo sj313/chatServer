@@ -25,12 +25,12 @@ namespace ChatServer.Transmissions {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiVwcm90by9tZXNzYWdlcy9lbmNyeXB0ZWRNZXNzYWdlLnByb3RvEhhDaGF0",
-            "U2VydmVyLlRyYW5zbWlzc2lvbnMiMwoQRW5jcnlwdGVkTWVzc2FnZRIOCgZ1",
-            "c2VySUQYASABKAwSDwoHbWVzc2FnZRgCIAEoDGIGcHJvdG8z"));
+            "U2VydmVyLlRyYW5zbWlzc2lvbnMiIwoQRW5jcnlwdGVkTWVzc2FnZRIPCgdt",
+            "ZXNzYWdlGAEgASgMYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.EncryptedMessage), global::ChatServer.Transmissions.EncryptedMessage.Parser, new[]{ "UserID", "Message" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.EncryptedMessage), global::ChatServer.Transmissions.EncryptedMessage.Parser, new[]{ "Message" }, null, null, null, null)
           }));
     }
     #endregion
@@ -66,7 +66,6 @@ namespace ChatServer.Transmissions {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public EncryptedMessage(EncryptedMessage other) : this() {
-      userID_ = other.userID_;
       message_ = other.message_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -76,19 +75,8 @@ namespace ChatServer.Transmissions {
       return new EncryptedMessage(this);
     }
 
-    /// <summary>Field number for the "userID" field.</summary>
-    public const int UserIDFieldNumber = 1;
-    private pb::ByteString userID_ = pb::ByteString.Empty;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString UserID {
-      get { return userID_; }
-      set {
-        userID_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     /// <summary>Field number for the "message" field.</summary>
-    public const int MessageFieldNumber = 2;
+    public const int MessageFieldNumber = 1;
     private pb::ByteString message_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public pb::ByteString Message {
@@ -111,7 +99,6 @@ namespace ChatServer.Transmissions {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (UserID != other.UserID) return false;
       if (Message != other.Message) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -119,7 +106,6 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (UserID.Length != 0) hash ^= UserID.GetHashCode();
       if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -137,12 +123,8 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (UserID.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteBytes(UserID);
-      }
       if (Message.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteBytes(Message);
       }
       if (_unknownFields != null) {
@@ -154,12 +136,8 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (UserID.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteBytes(UserID);
-      }
       if (Message.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteBytes(Message);
       }
       if (_unknownFields != null) {
@@ -171,9 +149,6 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (UserID.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(UserID);
-      }
       if (Message.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(Message);
       }
@@ -187,9 +162,6 @@ namespace ChatServer.Transmissions {
     public void MergeFrom(EncryptedMessage other) {
       if (other == null) {
         return;
-      }
-      if (other.UserID.Length != 0) {
-        UserID = other.UserID;
       }
       if (other.Message.Length != 0) {
         Message = other.Message;
@@ -209,10 +181,6 @@ namespace ChatServer.Transmissions {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            UserID = input.ReadBytes();
-            break;
-          }
-          case 18: {
             Message = input.ReadBytes();
             break;
           }
@@ -231,10 +199,6 @@ namespace ChatServer.Transmissions {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            UserID = input.ReadBytes();
-            break;
-          }
-          case 18: {
             Message = input.ReadBytes();
             break;
           }

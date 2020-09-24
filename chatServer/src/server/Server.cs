@@ -55,7 +55,11 @@ namespace ChatServer.Server
                         Console.WriteLine("Connected succesfully, Establishing session key...");
                         var connection = new Connection(newClient, Encryption.DiffieHellman.GetSharedKey(newClient));
                         Console.WriteLine("Session key established");
-                        Onboard(connection);
+                        if(!CONNECTIONS.TryAdd(connection.ConnectionID, connection))
+                            Console.WriteLine("Connection with this ID alreasy exists, This should never happen...");
+                        new Task(() => { ServerTransmissionHandler.RecieveFrom(connection); }).Start();
+                        
+                        ServerTransmissionHandler.Send(connection, "SERVER: Connection established");
                     }
                     catch(Exception e)
                     {
@@ -73,17 +77,6 @@ namespace ChatServer.Server
                 LISTENER.Stop();
                 //UICONTROLLER.Display(new Message(SERVER_USER, "Shutting down..."));
             }
-        }
-
-        private static void Onboard(Connection connection)
-        {
-            ServerTransmissionHandler.Send(connection, "Sup, welcome to this awesome chat server!");
-            ServerTransmissionHandler.SendOnboardRequest(connection, Transmissions.Errors.Error.NoError);
-            if(!CONNECTIONS.TryAdd(connection.ConnectionID, connection)) {
-                Console.WriteLine("Connection with this ID alreasy exists");
-            };
-            Console.WriteLine("Onboard Complete");
-            new Task(() => { ServerTransmissionHandler.RecieveFrom(connection); }).Start();
         }
     }
 }

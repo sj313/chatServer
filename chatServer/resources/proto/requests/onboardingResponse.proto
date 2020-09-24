@@ -1,7 +1,0 @@
-syntax = "proto3";
-package ChatServer.Transmissions;
-
-message OnboardingResponse {
-    bytes userID = 1;
-    string name = 2;
-}

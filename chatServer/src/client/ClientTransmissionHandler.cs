@@ -11,28 +11,29 @@ namespace ChatServer.Client
     {
         private static readonly ConcurrentQueue<Transmission> TransmissionsRecieved = new ConcurrentQueue<Transmission>();
         private static readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
-        public static Transmission CreateTransmission(string messageString)
+        private static Message CreateMessage(string messageString)
         {
             var messageBytes = Encoding.UTF8.GetBytes(messageString);
             var encryptedMessage = new EncryptedMessage(messageBytes, Client.SERVER_PASS);
-            var message = new Message(0, encryptedMessage);
+            return new Message(0, encryptedMessage);
+        }
+
+        private static Transmission CreateTransmission(Message message)
+        {
             return new Transmission(message, Client.CLIENT_KEYS.ExportRSAPrivateKey(), Client.CLIENT_KEYS.ExportRSAPublicKey());
         }
 
-        public static void Send(string messageString)
+        private static Transmission CreateTransmission(Request request)
         {
-            Send(CreateTransmission(messageString));
+            return new Transmission(request, Client.CLIENT_KEYS.ExportRSAPrivateKey(), Client.CLIENT_KEYS.ExportRSAPublicKey());
         }
 
-        public static void SendOnboardingResponse()
+        private static Transmission CreateTransmission(Response response)
         {
-            var response = new OnboardingResponse(Client.USER.ID, Client.USER.Name);
-            var request = new Request(response);
-            var transmission = new Transmission(request, Client.CLIENT_KEYS.ExportRSAPrivateKey(), Client.CLIENT_KEYS.ExportRSAPublicKey());
-            Send(transmission);
+            return new Transmission(response, Client.CLIENT_KEYS.ExportRSAPrivateKey(), Client.CLIENT_KEYS.ExportRSAPublicKey());
         }
 
-        public static void Send(Transmission transmission)
+        private static void Send(Transmission transmission)
         {
             var encryptedTransmission = new EncryptedTransmission(transmission, Client.Connection.SessionKey);
 
@@ -41,6 +42,33 @@ namespace ChatServer.Client
 
             stream.Write(BitConverter.GetBytes(bytes.LongLength), 0, 8);
             stream.Write(bytes, 0, bytes.Length);
+        }
+
+        public static void Send(string messageString)
+        {
+            Send(CreateTransmission(CreateMessage(messageString)));
+        }
+
+        public static void Send(Message message)
+        {
+            Send(CreateTransmission(message));
+        }
+
+        public static void Send(Request request)
+        {
+            Send(CreateTransmission(request));
+        }
+
+        public static void Send(Response response)
+        {
+            Send(CreateTransmission(response));
+        }
+
+        public static void SendJoinRequest()
+        {
+            var joinRequest = new JoinRequest();
+            var request = new Request(joinRequest);
+            Send(request);
         }
 
         public static void RecieveFrom()

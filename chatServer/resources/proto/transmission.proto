@@ -1,7 +1,8 @@
 syntax = "proto3";
 package ChatServer.Transmissions;
-import "messages/message.proto";
-import "requests/request.proto";
+import "proto/messages/message.proto";
+import "proto/requests/request.proto";
+import "proto/responses/response.proto";
 
 message Transmission {
     bytes signature = 1;
@@ -9,5 +10,6 @@ message Transmission {
     oneof content {
         Message message = 3;
         Request request = 4;
+        Response response = 5;
     }
 }

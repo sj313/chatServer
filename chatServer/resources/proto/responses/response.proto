@@ -1,6 +1,6 @@
 syntax = "proto3";
 package ChatServer.Transmissions;
 
-message EncryptedMessage {
-    bytes message = 1;    
+message Response {
+    int32 errorID = 1;
 }

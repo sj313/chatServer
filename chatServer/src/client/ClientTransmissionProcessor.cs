@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using ChatServer.Transmissions;
 
@@ -47,8 +49,17 @@ namespace ChatServer.Client
         private static void DecryptAndDisplay(Transmission transmission)
         {
             //Temp
-            var message = Encoding.UTF8.GetString(transmission.Message.EncryptedMessage.Decrypt(Client.SERVER_PASS));
-            UIController.Display(message);
+            if (transmission.SenderID.ToByteArray().SequenceEqual(Client.CLIENT_KEYS.ExportRSAPublicKey())) return;
+            
+            try
+            {
+                var message = Encoding.UTF8.GetString(transmission.Message.EncryptedMessage.Decrypt(Client.SERVER_PASS));
+                UIController.Display(message);
+            }
+            catch (CryptographicException)
+            {
+                UIController.Display($"Received incorrectly encrypted message from user: {"???"}");
+            }
         }
 
         private static void ProcessResponse(Transmission transmission)

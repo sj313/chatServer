@@ -17,10 +17,10 @@ namespace ChatServer
 
         public static byte[] asBtyes(this int numToChange)
         {
-            return BitConverter.GetBytes((Int64)numToChange);
+            return BitConverter.GetBytes((long)numToChange);
         }
 
-        public static Int64 asInt64(this byte[] byteArrayToChange)
+        public static long asLong(this byte[] byteArrayToChange)
         {
             return BitConverter.ToInt64(byteArrayToChange);
         }

@@ -1,6 +1,7 @@
 using System.Data.Entity;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Security.Cryptography;
 
 
 namespace ChatServer.DataLayer
@@ -18,7 +19,7 @@ namespace ChatServer.DataLayer
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Transmissions.EncryptedMessage>().Ignore(em => em.Message);
-            modelBuilder.Entity<Transmissions.EncryptedMessage>().Ignore(em => em.UserID);
+            // modelBuilder.Entity<Transmissions.EncryptedMessage>().Ignore(em => em.UserID);
 
             modelBuilder.Entity<Transmissions.ServerMessage>().Ignore(sm => sm.Message);
         }
@@ -32,7 +33,9 @@ namespace ChatServer.DataLayer
 
         public User GetUserForEncryptedMessage(Transmissions.EncryptedMessage encryptedMessage)
         {
-            return this.Users.Find(encryptedMessage._user_id);
+            // Temp change to stop error, definitely will not work as intended
+            // return this.Users.Find(encryptedMessage._user_id);
+            return new User(null, null);
         }
 
         public string GetSenderNameForMessage(Transmissions.Message message)

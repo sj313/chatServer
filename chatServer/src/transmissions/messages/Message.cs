@@ -16,14 +16,14 @@ namespace ChatServer.Transmissions
             get { return this.CreatedAt.ToDateTime(); }
             set { this.CreatedAt = Timestamp.FromDateTime(value); }
         }
-        public Message(Int64 chatID, EncryptedMessage encryptedMessage)
+        public Message(long chatID, EncryptedMessage encryptedMessage)
         {
             ChatID = chatID;
             EncryptedMessage = encryptedMessage;
             OnConstruction();
         }
 
-        public Message(Int64 chatID, ServerMessage serverMessage)
+        public Message(long chatID, ServerMessage serverMessage)
         {
             ChatID = chatID;
             ServerMessage = serverMessage;

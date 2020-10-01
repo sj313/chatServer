@@ -6,28 +6,30 @@ using System.Text;
 using System.Security.Cryptography;
 
 namespace ChatServer.Client
-{
+    {
     public abstract class Client
     {
-        private const Int32 PORT = 9;
+        private const int PORT = 9;
         private static readonly string HOSTNAME = Dns.GetHostName();
-        public static readonly User USER = new User();
         public static Connection Connection;
         //Temp (should ask user for password)
         private static readonly byte[] KeyPass = Encoding.UTF8.GetBytes("ClientKeyPassword");
         private const string KEY_PATH = @"..\resources\.clientKeys";
         public static readonly byte[] SERVER_PASS = Encoding.UTF8.GetBytes("ServerPassword");
-        public static readonly RSACryptoServiceProvider CLIENT_KEYS = Encryption.KeyStorage.GetKeys(KEY_PATH, KeyPass);
+        public static RSACryptoServiceProvider CLIENT_KEYS = Encryption.KeyStorage.GetKeys(KEY_PATH, KeyPass);
 
         public static void StartClient()
         {
+            
+            //Uncomment to generate new random keys for each client (Also need to remove readonly)
+            // CLIENT_KEYS = new RSACryptoServiceProvider(2048);
+
+            
             UIController.Display += (x) => Console.WriteLine(x);
-            // Console.WriteLine("Please Enter Your Password");
-            // var keyPass = Encoding.UTF8.GetBytes(Console.ReadLine());
-            // USER.ID = CLIENT_KEYS.ExportRSAPublicKey();
-            USER.Name = "Test";
 
             AttemptConnect();
+            // Connection.User = new User(CLIENT_KEYS.ExportRSAPublicKey());
+
 
             // var CLEAR_AFTER = 3000;
             // UICONTROLLER.Display += (x) =>
@@ -61,28 +63,38 @@ namespace ChatServer.Client
             try
             {
 
+                Task connectionManager = new Task(() => {
+
+                });
+
                 Task waitForJoinConfirmation = new Task(() =>
                 {
+                    var i = 0;
                     while (!Connection.Joined)
                     {
+                        if (i > 10)
+                        {
+                            throw new TimeoutException();
+                        }
+                        i++;
+
                         UIController.Display("Sending join request...");
                         ClientTransmissionHandler.SendJoinRequest();
                         System.Threading.Thread.Sleep(1000);
                     }
-                    UIController.Display("Received join confirmation");
                 });
 
-                Task recievingTransmissions = new Task(() => { ClientTransmissionHandler.RecieveFrom(); });
+                Task recieveTransmissions = new Task(() => { ClientTransmissionHandler.RecieveFrom(); });
 
                 Task processTransmissions = new Task(() =>
                 {
                     ClientTransmissionHandler.OnTransmissionRecieved();
                 });
 
-                Task gettingInput = new Task(() => { UIController.getInput((x) => { ClientTransmissionHandler.Send(x); }); });
+                Task gettingInput = new Task(() => { UIController.getInput((x) => { ClientTransmissionHandler.Send(1, x); }); });
 
                 
-                recievingTransmissions.Start();
+                recieveTransmissions.Start();
                 processTransmissions.Start();
 
                 waitForJoinConfirmation.Start();
@@ -92,7 +104,7 @@ namespace ChatServer.Client
 
                 processTransmissions.Wait();
                 gettingInput.Wait();
-                recievingTransmissions.Wait();
+                recieveTransmissions.Wait();
             }
             catch (Exception e)
             {
@@ -130,11 +142,6 @@ namespace ChatServer.Client
                     // Console.WriteLine("SocketException: {0}", e);
                 }
             }
-        }
-
-        private static void AttemptJoin()
-        {
-            
         }
 
         // private static void clearLines(int start, int end)

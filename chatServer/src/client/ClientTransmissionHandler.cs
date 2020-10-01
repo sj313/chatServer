@@ -11,11 +11,11 @@ namespace ChatServer.Client
     {
         private static readonly ConcurrentQueue<Transmission> TransmissionsRecieved = new ConcurrentQueue<Transmission>();
         private static readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
-        private static Message CreateMessage(string messageString)
+        private static Message CreateMessage(long chatID, string messageString)
         {
             var messageBytes = Encoding.UTF8.GetBytes(messageString);
             var encryptedMessage = new EncryptedMessage(messageBytes, Client.SERVER_PASS);
-            return new Message(0, encryptedMessage);
+            return new Message(chatID, encryptedMessage);
         }
 
         private static Transmission CreateTransmission(Message message)
@@ -44,9 +44,9 @@ namespace ChatServer.Client
             stream.Write(bytes, 0, bytes.Length);
         }
 
-        public static void Send(string messageString)
+        public static void Send(long chatID, string messageString)
         {
-            Send(CreateTransmission(CreateMessage(messageString)));
+            Send(CreateTransmission(CreateMessage(chatID, messageString)));
         }
 
         public static void Send(Message message)
@@ -87,7 +87,7 @@ namespace ChatServer.Client
             byte[] messageLength = new byte[8];
             stream.Read(messageLength, 0, 8);
 
-            byte[] data = new byte[messageLength.asInt64()];
+            byte[] data = new byte[messageLength.asLong()];
             stream.Read(data, 0, data.Length);
 
             var parser = new MessageParser<EncryptedTransmission>(() => new EncryptedTransmission());

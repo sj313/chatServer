@@ -12,7 +12,7 @@ namespace ChatServer
         public Guid ConnectionID = Guid.NewGuid();
 
         public bool Joined = false;
-        public User User = new User();
+        public User User;
 
         public Connection(TcpClient tcpClient, byte[] sessionKey)
         {

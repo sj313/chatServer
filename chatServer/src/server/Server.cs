@@ -11,8 +11,6 @@ namespace ChatServer.Server
     {
         private static readonly int PORT = 9;
         private static readonly IPAddress LOCAL_ADDRESS = IPAddress.Any;
-        private static readonly TcpListener LISTENER = new TcpListener(LOCAL_ADDRESS, PORT);
-        public static readonly string SERVER_NAME = "<SuperBot 5000>";
         const string KEY_PATH = @"..\resources\.serverkeys";
         private static readonly byte[] KEY_PASS = Encoding.UTF8.GetBytes("ServerKeyPassword");
         public static RSACryptoServiceProvider SERVER_KEYS = Encryption.KeyStorage.GetKeys(KEY_PATH, KEY_PASS);
@@ -39,22 +37,20 @@ namespace ChatServer.Server
 
         private static void LookForConnections()
         {
+            var tcpListener = new TcpListener(LOCAL_ADDRESS, PORT);
             try
             {
-                LISTENER.Start(1000);
+                tcpListener.Start(1000);
                 //UICONTROLLER.Display(new Message(SERVER_USER, "Starting up..."));
                 while (true)
                 {
-                    Console.WriteLine("Looking for connections...");
                     try
                     {
-                        var newClient = LISTENER.AcceptTcpClient();
-                        Console.WriteLine("Connected succesfully, Establishing session key...");
-                        var connection = new Connection(newClient, Encryption.DiffieHellman.GetSharedKey(newClient));
-                        Console.WriteLine("Session key established");
+                        var connection = new Connection(tcpListener.AcceptTcpClient());
+                        Console.WriteLine($"{connection.ConnectionID} (Connection): Connection Established");
+                        connection.SessionKey = Encryption.DiffieHellman.GetSharedKey(connection.TCPClient);
+                        Console.WriteLine($"{connection.ConnectionID} (Connection): Session Key Established");
                         ServerConnections.Add(connection);
-                        //TODO: Add connnection to list of user connections
-                        ServerTransmissionHandler.Send(connection, "SERVER: Connection established");
                         new Task(() => { ServerTransmissionHandler.RecieveFrom(connection); }).Start();
                         
                     }
@@ -71,7 +67,7 @@ namespace ChatServer.Server
             }
             finally
             {
-                LISTENER.Stop();
+                tcpListener.Stop();
                 //UICONTROLLER.Display(new Message(SERVER_USER, "Shutting down..."));
             }
         }

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Google.Protobuf.WellKnownTypes;
+using Google.Protobuf;
 
 namespace ChatServer.Transmissions
 {
@@ -11,21 +12,23 @@ namespace ChatServer.Transmissions
         [Key]
         public long ID { get; set; }
 
+        public Guid ChatID {get {return new Guid(ChatIDBytes.ToByteArray());}}
+
         public DateTime _createdAt
         {
             get { return this.CreatedAt.ToDateTime(); }
             set { this.CreatedAt = Timestamp.FromDateTime(value); }
         }
-        public Message(long chatID, EncryptedMessage encryptedMessage)
+        public Message(Guid chatID, EncryptedMessage encryptedMessage)
         {
-            ChatID = chatID;
+            ChatIDBytes = ByteString.CopyFrom(chatID.ToByteArray());
             EncryptedMessage = encryptedMessage;
             OnConstruction();
         }
 
-        public Message(long chatID, ServerMessage serverMessage)
+        public Message(Guid chatID, ServerMessage serverMessage)
         {
-            ChatID = chatID;
+            ChatIDBytes = ByteString.CopyFrom(chatID.ToByteArray());
             ServerMessage = serverMessage;
             OnConstruction();
         }
@@ -55,6 +58,11 @@ namespace ChatServer.Transmissions
             return this.HasEncyptedMessage() ? this.EncryptedMessage.GetType() : this.ServerMessage.GetType();
         }
 
+        internal Errors.Error Validate()
+        {
+            if (EncryptedMessage == null && ServerMessage == null) return Errors.Error.NoContent;
+            return Errors.Error.NoError;
+        }
     }
 
 }

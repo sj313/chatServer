@@ -28,16 +28,16 @@ namespace ChatServer.Transmissions {
             "YW5zbWlzc2lvbnMaS3BhY2thZ2VzL2dvb2dsZS5wcm90b2J1Zi50b29scy8z",
             "LjEzLjAvdG9vbHMvZ29vZ2xlL3Byb3RvYnVmL3RpbWVzdGFtcC5wcm90bxol",
             "cHJvdG8vbWVzc2FnZXMvZW5jcnlwdGVkTWVzc2FnZS5wcm90bxoicHJvdG8v",
-            "bWVzc2FnZXMvc2VydmVyTWVzc2FnZS5wcm90byLhAQoHTWVzc2FnZRIOCgZj",
-            "aGF0SUQYASABKAMSRgoQZW5jcnlwdGVkTWVzc2FnZRgCIAEoCzIqLkNoYXRT",
-            "ZXJ2ZXIuVHJhbnNtaXNzaW9ucy5FbmNyeXB0ZWRNZXNzYWdlSAASQAoNc2Vy",
-            "dmVyTWVzc2FnZRgDIAEoCzInLkNoYXRTZXJ2ZXIuVHJhbnNtaXNzaW9ucy5T",
-            "ZXJ2ZXJNZXNzYWdlSAASLQoJY3JlYXRlZEF0GAQgASgLMhouZ29vZ2xlLnBy",
-            "b3RvYnVmLlRpbWVzdGFtcEINCgttZXNzYWdlVHlwZWIGcHJvdG8z"));
+            "bWVzc2FnZXMvc2VydmVyTWVzc2FnZS5wcm90byLmAQoHTWVzc2FnZRITCgtj",
+            "aGF0SURCeXRlcxgBIAEoDBJGChBlbmNyeXB0ZWRNZXNzYWdlGAIgASgLMiou",
+            "Q2hhdFNlcnZlci5UcmFuc21pc3Npb25zLkVuY3J5cHRlZE1lc3NhZ2VIABJA",
+            "Cg1zZXJ2ZXJNZXNzYWdlGAMgASgLMicuQ2hhdFNlcnZlci5UcmFuc21pc3Np",
+            "b25zLlNlcnZlck1lc3NhZ2VIABItCgljcmVhdGVkQXQYBCABKAsyGi5nb29n",
+            "bGUucHJvdG9idWYuVGltZXN0YW1wQg0KC21lc3NhZ2VUeXBlYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, global::ChatServer.Transmissions.EncryptedMessageReflection.Descriptor, global::ChatServer.Transmissions.ServerMessageReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Message), global::ChatServer.Transmissions.Message.Parser, new[]{ "ChatID", "EncryptedMessage", "ServerMessage", "CreatedAt" }, new[]{ "MessageType" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Message), global::ChatServer.Transmissions.Message.Parser, new[]{ "ChatIDBytes", "EncryptedMessage", "ServerMessage", "CreatedAt" }, new[]{ "MessageType" }, null, null, null)
           }));
     }
     #endregion
@@ -73,7 +73,7 @@ namespace ChatServer.Transmissions {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Message(Message other) : this() {
-      chatID_ = other.chatID_;
+      chatIDBytes_ = other.chatIDBytes_;
       createdAt_ = other.createdAt_ != null ? other.createdAt_.Clone() : null;
       switch (other.MessageTypeCase) {
         case MessageTypeOneofCase.EncryptedMessage:
@@ -92,14 +92,14 @@ namespace ChatServer.Transmissions {
       return new Message(this);
     }
 
-    /// <summary>Field number for the "chatID" field.</summary>
-    public const int ChatIDFieldNumber = 1;
-    private long chatID_;
+    /// <summary>Field number for the "chatIDBytes" field.</summary>
+    public const int ChatIDBytesFieldNumber = 1;
+    private pb::ByteString chatIDBytes_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public long ChatID {
-      get { return chatID_; }
+    public pb::ByteString ChatIDBytes {
+      get { return chatIDBytes_; }
       set {
-        chatID_ = value;
+        chatIDBytes_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -168,7 +168,7 @@ namespace ChatServer.Transmissions {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (ChatID != other.ChatID) return false;
+      if (ChatIDBytes != other.ChatIDBytes) return false;
       if (!object.Equals(EncryptedMessage, other.EncryptedMessage)) return false;
       if (!object.Equals(ServerMessage, other.ServerMessage)) return false;
       if (!object.Equals(CreatedAt, other.CreatedAt)) return false;
@@ -179,7 +179,7 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (ChatID != 0L) hash ^= ChatID.GetHashCode();
+      if (ChatIDBytes.Length != 0) hash ^= ChatIDBytes.GetHashCode();
       if (messageTypeCase_ == MessageTypeOneofCase.EncryptedMessage) hash ^= EncryptedMessage.GetHashCode();
       if (messageTypeCase_ == MessageTypeOneofCase.ServerMessage) hash ^= ServerMessage.GetHashCode();
       if (createdAt_ != null) hash ^= CreatedAt.GetHashCode();
@@ -200,9 +200,9 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (ChatID != 0L) {
-        output.WriteRawTag(8);
-        output.WriteInt64(ChatID);
+      if (ChatIDBytes.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(ChatIDBytes);
       }
       if (messageTypeCase_ == MessageTypeOneofCase.EncryptedMessage) {
         output.WriteRawTag(18);
@@ -225,9 +225,9 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (ChatID != 0L) {
-        output.WriteRawTag(8);
-        output.WriteInt64(ChatID);
+      if (ChatIDBytes.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(ChatIDBytes);
       }
       if (messageTypeCase_ == MessageTypeOneofCase.EncryptedMessage) {
         output.WriteRawTag(18);
@@ -250,8 +250,8 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (ChatID != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(ChatID);
+      if (ChatIDBytes.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(ChatIDBytes);
       }
       if (messageTypeCase_ == MessageTypeOneofCase.EncryptedMessage) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(EncryptedMessage);
@@ -273,8 +273,8 @@ namespace ChatServer.Transmissions {
       if (other == null) {
         return;
       }
-      if (other.ChatID != 0L) {
-        ChatID = other.ChatID;
+      if (other.ChatIDBytes.Length != 0) {
+        ChatIDBytes = other.ChatIDBytes;
       }
       if (other.createdAt_ != null) {
         if (createdAt_ == null) {
@@ -311,8 +311,8 @@ namespace ChatServer.Transmissions {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 8: {
-            ChatID = input.ReadInt64();
+          case 10: {
+            ChatIDBytes = input.ReadBytes();
             break;
           }
           case 18: {
@@ -354,8 +354,8 @@ namespace ChatServer.Transmissions {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8: {
-            ChatID = input.ReadInt64();
+          case 10: {
+            ChatIDBytes = input.ReadBytes();
             break;
           }
           case 18: {

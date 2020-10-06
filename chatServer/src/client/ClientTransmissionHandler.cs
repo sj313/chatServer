@@ -11,7 +11,7 @@ namespace ChatServer.Client
     {
         private static readonly ConcurrentQueue<Transmission> TransmissionsRecieved = new ConcurrentQueue<Transmission>();
         private static readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
-        private static Message CreateMessage(long chatID, string messageString)
+        private static Message CreateMessage(Guid chatID, string messageString)
         {
             var messageBytes = Encoding.UTF8.GetBytes(messageString);
             var encryptedMessage = new EncryptedMessage(messageBytes, Client.SERVER_PASS);
@@ -44,7 +44,7 @@ namespace ChatServer.Client
             stream.Write(bytes, 0, bytes.Length);
         }
 
-        public static void Send(long chatID, string messageString)
+        public static void Send(Guid chatID, string messageString)
         {
             Send(CreateTransmission(CreateMessage(chatID, messageString)));
         }
@@ -64,10 +64,17 @@ namespace ChatServer.Client
             Send(CreateTransmission(response));
         }
 
-        public static void SendJoinRequest()
+        public static void SendServerJoinRequest()
         {
-            var joinRequest = new JoinRequest();
-            var request = new Request(joinRequest);
+            var serverJoinRequest = new ServerJoinRequest();
+            var request = new Request(serverJoinRequest);
+            Send(request);
+        }
+
+        public static void SendChatJoinRequest(Guid chatID)
+        {
+            var chatJoinRequest = new ChatJoinRequest(chatID);
+            var request = new Request(chatJoinRequest);
             Send(request);
         }
 

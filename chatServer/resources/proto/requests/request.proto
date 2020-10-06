@@ -1,9 +1,15 @@
 syntax = "proto3";
 package ChatServer.Transmissions;
-import "proto/requests/joinRequest.proto";
+import "proto/requests/serverJoinRequest.proto";
+import "proto/requests/chatJoinRequest.proto";
+import "proto/requests/chatLeaveRequest.proto";
+import "proto/requests/nameChangeRequest.proto";
 
 message Request {
     oneof request {
-        JoinRequest joinRequest = 1;
+        ServerJoinRequest serverJoinRequest = 1;
+        ChatJoinRequest ChatJoinRequest = 2;
+        ChatLeaveRequest chatLeaveRequest = 3;
+        NameChangeRequest nameChangeRequest = 4;
     }
 }

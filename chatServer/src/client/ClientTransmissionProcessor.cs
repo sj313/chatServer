@@ -13,17 +13,14 @@ namespace ChatServer.Client
             if (transmission.Message != null)
             {
                 ProcessMessage(transmission);
-                return;
             }
             if (transmission.Request != null)
             {
                 ProcessRequest(transmission);
-                return;
             }
             if (transmission.Response != null)
             {
                 ProcessResponse(transmission);
-                return;
             }
 
         }
@@ -44,8 +41,15 @@ namespace ChatServer.Client
 
         private static void ProcessRequest(Transmission transmission)
         {
-            return;
+            throw new NotImplementedException();
         }
+
+        private static void ProcessResponse(Transmission transmission)
+        {
+            // TODO: Definitely should not just be using one response type! (Probably)
+            if (transmission.Response.ErrorID == (int)Errors.Error.NoError) Client.Connection.Joined = true;
+        }
+
         private static void DecryptAndDisplay(Transmission transmission)
         {
             //Temp
@@ -58,15 +62,9 @@ namespace ChatServer.Client
             }
             catch (CryptographicException)
             {
+                // TODO: When client has user info display the user that send bad message
                 UIController.Display($"Received incorrectly encrypted message from user: {"???"}");
             }
-        }
-
-        private static void ProcessResponse(Transmission transmission)
-        {
-            if (transmission.Response.ErrorID == (int)Errors.Error.NoError)
-                Client.Connection.Joined = true;
-            return;
         }
     }
 }

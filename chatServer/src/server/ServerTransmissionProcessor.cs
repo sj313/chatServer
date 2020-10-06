@@ -10,20 +10,16 @@ namespace ChatServer.Server
         public static void Process(Tuple<Transmission, Connection> transmission)
         {
             Console.WriteLine($"{transmission.Item2.ConnectionID} (Connection): Processing Transmission");
-            // Verify Transmission includes SenderID
-            if (transmission.Item1.SenderID == null)
+            // Check Transmission is valid
+            var error = transmission.Item1.Validate();
+            if (error != Errors.Error.NoError)
             {
-                // TODO: Process error
-                return;
-            }
-            // Verify Transmission is correctly signed
-            if (!transmission.Item1.Verify())
-            {
-                //TODO: Process error
-                return;
+                // TODO
+                // Return error response 
+                return;   
             }
             // Process as Message if Transmission contains Message and Connection has joined succesfully
-            if (transmission.Item1.Message != null && transmission.Item2.Joined)
+            if (transmission.Item1.Message != null)
             {
                 ProcessMessage(transmission);
                 return;
@@ -44,6 +40,11 @@ namespace ChatServer.Server
 
         private static void ProcessMessage(Tuple<Transmission, Connection> transmission)
         {
+            if (!transmission.Item2.Joined)
+            {
+                // TODO Process error
+                return;
+            }
             //TODO: Check permissions
             var message = transmission.Item1.Message;
             // Rebroadcast if Message is an Encryptedmessage
@@ -61,17 +62,38 @@ namespace ChatServer.Server
 
         private static void ProcessRequest(Tuple<Transmission, Connection> transmission)
         {
-            if (transmission.Item1.Request.JoinRequest != null)
+            if (transmission.Item1.Request.ServerJoinRequest != null)
             {
-                ProcessJoinRequest(transmission);
+                ProcessServerJoinRequest(transmission);
             }
+            if (transmission.Item1.Request.ChatJoinRequest != null)
+            {
+                ProcessChatJoinRequest(transmission);;
+            }
+            if (transmission.Item1.Request.ChatLeaveRequest != null)
+            {
+
+            }
+        }
+
+        private static void ProcessChatJoinRequest(Tuple<Transmission, Connection> transmission)
+        {
+            var userID = transmission.Item1.SenderID.ToByteArray();
+            var chatID = new Guid(transmission.Item1.Request.ChatJoinRequest.ChatID.ToByteArray());
+            // TODO: Permissions
+            if (!(ServerConnections.CHAT_USERS.ContainsKey(chatID) && ServerConnections.CHAT_USERS[chatID].ContainsKey(userID)))
+            {
+                ServerConnections.AddToChat(userID, chatID);
+                ServerTransmissionHandler.SendResponse(transmission.Item2, Errors.Error.NoError);
+                Console.WriteLine($"{transmission.Item2.User.Name} (User): Joined {chatID} (Chat)");
+            }
+            //TODO: Error processing
         }
 
         private static void ProcessResponse(Tuple<Transmission, Connection> transmission)
         {
             Console.WriteLine($"{transmission.Item2.ConnectionID} (Connection): Processing Response");
             // Clients do not currently send responses
-            return;
         }
 
         private static void Rebroadcast(Tuple<Transmission, Connection> transmission)
@@ -80,7 +102,7 @@ namespace ChatServer.Server
             ServerTransmissionHandler.Send(transmission.Item1.Message.ChatID, transmission.Item1);
         }
 
-        private static void ProcessJoinRequest(Tuple<Transmission, Connection> transmission)
+        private static void ProcessServerJoinRequest(Tuple<Transmission, Connection> transmission)
         {
             Console.WriteLine($"{transmission.Item2.ConnectionID} (Connection): Processing Join Request");
 
@@ -96,9 +118,6 @@ namespace ChatServer.Server
 
             // Add Connection to relevant collections
             ServerConnections.Add(connection);
-            // Temp
-            // Add User to chat 1 by default
-            ServerConnections.AddToChat(userID, 1);
             
             // Send join message if this is the first Connection for this User
             if (firstConnection)

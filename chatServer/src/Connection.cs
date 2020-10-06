@@ -14,6 +14,10 @@ namespace ChatServer
         public bool Joined = false;
         public User User;
 
+        public Connection(TcpClient tcpClient)
+        {
+            TCPClient = tcpClient;
+        }
         public Connection(TcpClient tcpClient, byte[] sessionKey)
         {
             TCPClient = tcpClient;

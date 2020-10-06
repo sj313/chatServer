@@ -21,15 +21,13 @@ namespace ChatServer.Client
         public static void StartClient()
         {
             
-            //Uncomment to generate new random keys for each client (Also need to remove readonly)
+            //Uncomment to generate new random keys for each client
             // CLIENT_KEYS = new RSACryptoServiceProvider(2048);
 
             
             UIController.Display += (x) => Console.WriteLine(x);
 
             AttemptConnect();
-            // Connection.User = new User(CLIENT_KEYS.ExportRSAPublicKey());
-
 
             // var CLEAR_AFTER = 3000;
             // UICONTROLLER.Display += (x) =>
@@ -63,9 +61,7 @@ namespace ChatServer.Client
             try
             {
 
-                Task connectionManager = new Task(() => {
-
-                });
+                Task recieveTransmissions = new Task(() => { ClientTransmissionHandler.RecieveFrom(); });
 
                 Task waitForJoinConfirmation = new Task(() =>
                 {
@@ -79,31 +75,34 @@ namespace ChatServer.Client
                         i++;
 
                         UIController.Display("Sending join request...");
-                        ClientTransmissionHandler.SendJoinRequest();
+                        ClientTransmissionHandler.SendServerJoinRequest();
                         System.Threading.Thread.Sleep(1000);
                     }
                 });
-
-                Task recieveTransmissions = new Task(() => { ClientTransmissionHandler.RecieveFrom(); });
 
                 Task processTransmissions = new Task(() =>
                 {
                     ClientTransmissionHandler.OnTransmissionRecieved();
                 });
 
-                Task gettingInput = new Task(() => { UIController.getInput((x) => { ClientTransmissionHandler.Send(1, x); }); });
+                // Temp: Send to chat 1 all the time, should get chat from user somehow
+                Task gettingInput = new Task(() => { UIController.getInput((x) => { ClientTransmissionHandler.Send(new Guid("00000000000000000000000000000001"), x); }); });
 
-                
+                // Start tasks to allow the client to receive and process transmissions
                 recieveTransmissions.Start();
                 processTransmissions.Start();
 
+                // Join the server
                 waitForJoinConfirmation.Start();
                 waitForJoinConfirmation.Wait();
 
+                // Temp: Join chat 1 by default
+                ClientTransmissionHandler.SendChatJoinRequest(new Guid("00000000000000000000000000000001"));
+
+                // Start getting input from the client
                 gettingInput.Start();
 
-                processTransmissions.Wait();
-                gettingInput.Wait();
+                // This is to make sure the main process doesn't end (Probably a better way to do this)
                 recieveTransmissions.Wait();
             }
             catch (Exception e)

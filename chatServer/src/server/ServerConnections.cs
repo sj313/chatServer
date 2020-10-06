@@ -13,9 +13,9 @@ namespace ChatServer.Server
         public static readonly ConcurrentDictionary<byte[], ConcurrentDictionary<Guid, Connection>> USER_CONNECTIONS = new ConcurrentDictionary<byte[], ConcurrentDictionary<Guid, Connection>>(new ByteArrayComparer());
         // Using ConcurrentDictionary<T, bool> as ConcurrentHashset<T>
         // Dictionary of all chats each user is in
-        public static readonly ConcurrentDictionary<byte[], ConcurrentDictionary<long, bool>> USER_CHATS = new ConcurrentDictionary<byte[], ConcurrentDictionary<long, bool>>(new ByteArrayComparer());
+        public static readonly ConcurrentDictionary<byte[], ConcurrentDictionary<Guid, bool>> USER_CHATS = new ConcurrentDictionary<byte[], ConcurrentDictionary<Guid, bool>>(new ByteArrayComparer());
         //Dictionary of all users each chat has
-        public static readonly ConcurrentDictionary<long, ConcurrentDictionary<byte[], bool>> CHAT_USERS = new ConcurrentDictionary<long, ConcurrentDictionary<byte[], bool>>();
+        public static readonly ConcurrentDictionary<Guid, ConcurrentDictionary<byte[], bool>> CHAT_USERS = new ConcurrentDictionary<Guid, ConcurrentDictionary<byte[], bool>>();
 
         // Add Connection to appropriate collections
         public static void Add(Connection connection)
@@ -77,7 +77,7 @@ namespace ChatServer.Server
         }
 
         // Add user to CHAT_USERS and add chat to USER_CHATS
-        public static void AddToChat(byte[] userID, long chatID)
+        public static void AddToChat(byte[] userID, Guid chatID)
         {
             // Check whether the user is already in any chats
             if (USER_CHATS.ContainsKey(userID))
@@ -88,7 +88,7 @@ namespace ChatServer.Server
             else
             {
                 // If the user is not in any chats create a new dictionary of chats for the user with the new chat and add this to USER_CHATS
-                USER_CHATS.TryAdd(userID, new ConcurrentDictionary<long, bool>(new KeyValuePair<long, bool>[] {new KeyValuePair<long, bool>(chatID, true)}));
+                USER_CHATS.TryAdd(userID, new ConcurrentDictionary<Guid, bool>(new KeyValuePair<Guid, bool>[] {new KeyValuePair<Guid, bool>(chatID, true)}));
             }
             
             // Check whether the chat already has any users

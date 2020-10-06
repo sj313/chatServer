@@ -26,7 +26,7 @@ namespace ChatServer.Transmissions {
             SenderID = ByteString.CopyFrom(pubKey);
         }
 
-        public bool Verify()
+        private bool Verify()
         {
             if (Message != null)
                 return RSA.Verify(SenderID.ToByteArray(), Message.ToByteArray(), Signature.ToByteArray());
@@ -35,6 +35,18 @@ namespace ChatServer.Transmissions {
             if (Response != null)
                 return RSA.Verify(SenderID.ToByteArray(), Response.ToByteArray(), Signature.ToByteArray());
             return false;
+        }
+
+        public Errors.Error Validate()
+        {
+            if (SenderID == null) return Errors.Error.NoSenderID;
+            if (Message == null && Request == null && Response == null) return Errors.Error.NoContent;
+            if (!Verify()) return Errors.Error.InvalidSignature;
+            if (Message != null) return Message.Validate();
+            if (Request != null) return Request.Validate();
+            if (Response != null) return Response.Validate();
+            return Errors.Error.NoError;
+
         }
 
     }

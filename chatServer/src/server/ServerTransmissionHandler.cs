@@ -15,7 +15,7 @@ namespace ChatServer.Server
         private static readonly ManualResetEvent transmissionsRecievedSignal = new ManualResetEvent(false);
 
         // Creates a Message (ServerMessage)
-        private static Message CreateMessage(long chatID, string messageString)
+        private static Message CreateMessage(Guid chatID, string messageString)
         {
             var messageBytes = Encoding.UTF8.GetBytes(messageString);
             var serverMessage = new ServerMessage(messageBytes);
@@ -63,7 +63,7 @@ namespace ChatServer.Server
         }
 
         // Send a Transmission to a chat
-        public static void Send(long chatID, Transmission transmission)
+        public static void Send(Guid chatID, Transmission transmission)
         {
             // Check that chat exists
             if (ServerConnections.CHAT_USERS.ContainsKey(chatID))
@@ -87,7 +87,7 @@ namespace ChatServer.Server
         }
 
         // Send server message to a chat
-        public static void Send(long chatID, string messageString)
+        public static void Send(Guid chatID, string messageString)
         {
             // Check that chat exists
             if (ServerConnections.CHAT_USERS.ContainsKey(chatID))
@@ -117,7 +117,7 @@ namespace ChatServer.Server
             if (ServerConnections.USER_CHATS.ContainsKey(userID))
             {
                 // Send message to all chats user is in
-               foreach (long chatID in ServerConnections.USER_CHATS[userID].Keys)
+               foreach (Guid chatID in ServerConnections.USER_CHATS[userID].Keys)
                 {
                     Send(chatID, messageString);
                 } 
@@ -128,7 +128,7 @@ namespace ChatServer.Server
         // Send ServerMessage to a connection (ChatID 0 is used to specify direct message)
         public static void Send(Connection connection, string messageString)
         {
-            Send(connection, CreateTransmission(CreateMessage(0, messageString)));
+            Send(connection, CreateTransmission(CreateMessage(new Guid(), messageString)));
         }
 
         // Send Request to connection

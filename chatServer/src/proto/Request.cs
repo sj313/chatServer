@@ -25,14 +25,21 @@ namespace ChatServer.Transmissions {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Chxwcm90by9yZXF1ZXN0cy9yZXF1ZXN0LnByb3RvEhhDaGF0U2VydmVyLlRy",
-            "YW5zbWlzc2lvbnMaIHByb3RvL3JlcXVlc3RzL2pvaW5SZXF1ZXN0LnByb3Rv",
-            "IlIKB1JlcXVlc3QSPAoLam9pblJlcXVlc3QYASABKAsyJS5DaGF0U2VydmVy",
-            "LlRyYW5zbWlzc2lvbnMuSm9pblJlcXVlc3RIAEIJCgdyZXF1ZXN0YgZwcm90",
-            "bzM="));
+            "YW5zbWlzc2lvbnMaJnByb3RvL3JlcXVlc3RzL3NlcnZlckpvaW5SZXF1ZXN0",
+            "LnByb3RvGiRwcm90by9yZXF1ZXN0cy9jaGF0Sm9pblJlcXVlc3QucHJvdG8a",
+            "JXByb3RvL3JlcXVlc3RzL2NoYXRMZWF2ZVJlcXVlc3QucHJvdG8aJnByb3Rv",
+            "L3JlcXVlc3RzL25hbWVDaGFuZ2VSZXF1ZXN0LnByb3RvIrYCCgdSZXF1ZXN0",
+            "EkgKEXNlcnZlckpvaW5SZXF1ZXN0GAEgASgLMisuQ2hhdFNlcnZlci5UcmFu",
+            "c21pc3Npb25zLlNlcnZlckpvaW5SZXF1ZXN0SAASRAoPQ2hhdEpvaW5SZXF1",
+            "ZXN0GAIgASgLMikuQ2hhdFNlcnZlci5UcmFuc21pc3Npb25zLkNoYXRKb2lu",
+            "UmVxdWVzdEgAEkYKEGNoYXRMZWF2ZVJlcXVlc3QYAyABKAsyKi5DaGF0U2Vy",
+            "dmVyLlRyYW5zbWlzc2lvbnMuQ2hhdExlYXZlUmVxdWVzdEgAEkgKEW5hbWVD",
+            "aGFuZ2VSZXF1ZXN0GAQgASgLMisuQ2hhdFNlcnZlci5UcmFuc21pc3Npb25z",
+            "Lk5hbWVDaGFuZ2VSZXF1ZXN0SABCCQoHcmVxdWVzdGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::ChatServer.Transmissions.JoinRequestReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::ChatServer.Transmissions.ServerJoinRequestReflection.Descriptor, global::ChatServer.Transmissions.ChatJoinRequestReflection.Descriptor, global::ChatServer.Transmissions.ChatLeaveRequestReflection.Descriptor, global::ChatServer.Transmissions.NameChangeRequestReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Request), global::ChatServer.Transmissions.Request.Parser, new[]{ "JoinRequest" }, new[]{ "Request" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChatServer.Transmissions.Request), global::ChatServer.Transmissions.Request.Parser, new[]{ "ServerJoinRequest", "ChatJoinRequest", "ChatLeaveRequest", "NameChangeRequest" }, new[]{ "Request" }, null, null, null)
           }));
     }
     #endregion
@@ -69,8 +76,17 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Request(Request other) : this() {
       switch (other.RequestCase) {
-        case RequestOneofCase.JoinRequest:
-          JoinRequest = other.JoinRequest.Clone();
+        case RequestOneofCase.ServerJoinRequest:
+          ServerJoinRequest = other.ServerJoinRequest.Clone();
+          break;
+        case RequestOneofCase.ChatJoinRequest:
+          ChatJoinRequest = other.ChatJoinRequest.Clone();
+          break;
+        case RequestOneofCase.ChatLeaveRequest:
+          ChatLeaveRequest = other.ChatLeaveRequest.Clone();
+          break;
+        case RequestOneofCase.NameChangeRequest:
+          NameChangeRequest = other.NameChangeRequest.Clone();
           break;
       }
 
@@ -82,14 +98,47 @@ namespace ChatServer.Transmissions {
       return new Request(this);
     }
 
-    /// <summary>Field number for the "joinRequest" field.</summary>
-    public const int JoinRequestFieldNumber = 1;
+    /// <summary>Field number for the "serverJoinRequest" field.</summary>
+    public const int ServerJoinRequestFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::ChatServer.Transmissions.JoinRequest JoinRequest {
-      get { return requestCase_ == RequestOneofCase.JoinRequest ? (global::ChatServer.Transmissions.JoinRequest) request_ : null; }
+    public global::ChatServer.Transmissions.ServerJoinRequest ServerJoinRequest {
+      get { return requestCase_ == RequestOneofCase.ServerJoinRequest ? (global::ChatServer.Transmissions.ServerJoinRequest) request_ : null; }
       set {
         request_ = value;
-        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.JoinRequest;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.ServerJoinRequest;
+      }
+    }
+
+    /// <summary>Field number for the "ChatJoinRequest" field.</summary>
+    public const int ChatJoinRequestFieldNumber = 2;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::ChatServer.Transmissions.ChatJoinRequest ChatJoinRequest {
+      get { return requestCase_ == RequestOneofCase.ChatJoinRequest ? (global::ChatServer.Transmissions.ChatJoinRequest) request_ : null; }
+      set {
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.ChatJoinRequest;
+      }
+    }
+
+    /// <summary>Field number for the "chatLeaveRequest" field.</summary>
+    public const int ChatLeaveRequestFieldNumber = 3;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::ChatServer.Transmissions.ChatLeaveRequest ChatLeaveRequest {
+      get { return requestCase_ == RequestOneofCase.ChatLeaveRequest ? (global::ChatServer.Transmissions.ChatLeaveRequest) request_ : null; }
+      set {
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.ChatLeaveRequest;
+      }
+    }
+
+    /// <summary>Field number for the "nameChangeRequest" field.</summary>
+    public const int NameChangeRequestFieldNumber = 4;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::ChatServer.Transmissions.NameChangeRequest NameChangeRequest {
+      get { return requestCase_ == RequestOneofCase.NameChangeRequest ? (global::ChatServer.Transmissions.NameChangeRequest) request_ : null; }
+      set {
+        request_ = value;
+        requestCase_ = value == null ? RequestOneofCase.None : RequestOneofCase.NameChangeRequest;
       }
     }
 
@@ -97,7 +146,10 @@ namespace ChatServer.Transmissions {
     /// <summary>Enum of possible cases for the "request" oneof.</summary>
     public enum RequestOneofCase {
       None = 0,
-      JoinRequest = 1,
+      ServerJoinRequest = 1,
+      ChatJoinRequest = 2,
+      ChatLeaveRequest = 3,
+      NameChangeRequest = 4,
     }
     private RequestOneofCase requestCase_ = RequestOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -124,7 +176,10 @@ namespace ChatServer.Transmissions {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!object.Equals(JoinRequest, other.JoinRequest)) return false;
+      if (!object.Equals(ServerJoinRequest, other.ServerJoinRequest)) return false;
+      if (!object.Equals(ChatJoinRequest, other.ChatJoinRequest)) return false;
+      if (!object.Equals(ChatLeaveRequest, other.ChatLeaveRequest)) return false;
+      if (!object.Equals(NameChangeRequest, other.NameChangeRequest)) return false;
       if (RequestCase != other.RequestCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -132,7 +187,10 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (requestCase_ == RequestOneofCase.JoinRequest) hash ^= JoinRequest.GetHashCode();
+      if (requestCase_ == RequestOneofCase.ServerJoinRequest) hash ^= ServerJoinRequest.GetHashCode();
+      if (requestCase_ == RequestOneofCase.ChatJoinRequest) hash ^= ChatJoinRequest.GetHashCode();
+      if (requestCase_ == RequestOneofCase.ChatLeaveRequest) hash ^= ChatLeaveRequest.GetHashCode();
+      if (requestCase_ == RequestOneofCase.NameChangeRequest) hash ^= NameChangeRequest.GetHashCode();
       hash ^= (int) requestCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -150,9 +208,21 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (requestCase_ == RequestOneofCase.JoinRequest) {
+      if (requestCase_ == RequestOneofCase.ServerJoinRequest) {
         output.WriteRawTag(10);
-        output.WriteMessage(JoinRequest);
+        output.WriteMessage(ServerJoinRequest);
+      }
+      if (requestCase_ == RequestOneofCase.ChatJoinRequest) {
+        output.WriteRawTag(18);
+        output.WriteMessage(ChatJoinRequest);
+      }
+      if (requestCase_ == RequestOneofCase.ChatLeaveRequest) {
+        output.WriteRawTag(26);
+        output.WriteMessage(ChatLeaveRequest);
+      }
+      if (requestCase_ == RequestOneofCase.NameChangeRequest) {
+        output.WriteRawTag(34);
+        output.WriteMessage(NameChangeRequest);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -163,9 +233,21 @@ namespace ChatServer.Transmissions {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (requestCase_ == RequestOneofCase.JoinRequest) {
+      if (requestCase_ == RequestOneofCase.ServerJoinRequest) {
         output.WriteRawTag(10);
-        output.WriteMessage(JoinRequest);
+        output.WriteMessage(ServerJoinRequest);
+      }
+      if (requestCase_ == RequestOneofCase.ChatJoinRequest) {
+        output.WriteRawTag(18);
+        output.WriteMessage(ChatJoinRequest);
+      }
+      if (requestCase_ == RequestOneofCase.ChatLeaveRequest) {
+        output.WriteRawTag(26);
+        output.WriteMessage(ChatLeaveRequest);
+      }
+      if (requestCase_ == RequestOneofCase.NameChangeRequest) {
+        output.WriteRawTag(34);
+        output.WriteMessage(NameChangeRequest);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -176,8 +258,17 @@ namespace ChatServer.Transmissions {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (requestCase_ == RequestOneofCase.JoinRequest) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(JoinRequest);
+      if (requestCase_ == RequestOneofCase.ServerJoinRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ServerJoinRequest);
+      }
+      if (requestCase_ == RequestOneofCase.ChatJoinRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ChatJoinRequest);
+      }
+      if (requestCase_ == RequestOneofCase.ChatLeaveRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ChatLeaveRequest);
+      }
+      if (requestCase_ == RequestOneofCase.NameChangeRequest) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(NameChangeRequest);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -191,11 +282,29 @@ namespace ChatServer.Transmissions {
         return;
       }
       switch (other.RequestCase) {
-        case RequestOneofCase.JoinRequest:
-          if (JoinRequest == null) {
-            JoinRequest = new global::ChatServer.Transmissions.JoinRequest();
+        case RequestOneofCase.ServerJoinRequest:
+          if (ServerJoinRequest == null) {
+            ServerJoinRequest = new global::ChatServer.Transmissions.ServerJoinRequest();
           }
-          JoinRequest.MergeFrom(other.JoinRequest);
+          ServerJoinRequest.MergeFrom(other.ServerJoinRequest);
+          break;
+        case RequestOneofCase.ChatJoinRequest:
+          if (ChatJoinRequest == null) {
+            ChatJoinRequest = new global::ChatServer.Transmissions.ChatJoinRequest();
+          }
+          ChatJoinRequest.MergeFrom(other.ChatJoinRequest);
+          break;
+        case RequestOneofCase.ChatLeaveRequest:
+          if (ChatLeaveRequest == null) {
+            ChatLeaveRequest = new global::ChatServer.Transmissions.ChatLeaveRequest();
+          }
+          ChatLeaveRequest.MergeFrom(other.ChatLeaveRequest);
+          break;
+        case RequestOneofCase.NameChangeRequest:
+          if (NameChangeRequest == null) {
+            NameChangeRequest = new global::ChatServer.Transmissions.NameChangeRequest();
+          }
+          NameChangeRequest.MergeFrom(other.NameChangeRequest);
           break;
       }
 
@@ -214,12 +323,39 @@ namespace ChatServer.Transmissions {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            global::ChatServer.Transmissions.JoinRequest subBuilder = new global::ChatServer.Transmissions.JoinRequest();
-            if (requestCase_ == RequestOneofCase.JoinRequest) {
-              subBuilder.MergeFrom(JoinRequest);
+            global::ChatServer.Transmissions.ServerJoinRequest subBuilder = new global::ChatServer.Transmissions.ServerJoinRequest();
+            if (requestCase_ == RequestOneofCase.ServerJoinRequest) {
+              subBuilder.MergeFrom(ServerJoinRequest);
             }
             input.ReadMessage(subBuilder);
-            JoinRequest = subBuilder;
+            ServerJoinRequest = subBuilder;
+            break;
+          }
+          case 18: {
+            global::ChatServer.Transmissions.ChatJoinRequest subBuilder = new global::ChatServer.Transmissions.ChatJoinRequest();
+            if (requestCase_ == RequestOneofCase.ChatJoinRequest) {
+              subBuilder.MergeFrom(ChatJoinRequest);
+            }
+            input.ReadMessage(subBuilder);
+            ChatJoinRequest = subBuilder;
+            break;
+          }
+          case 26: {
+            global::ChatServer.Transmissions.ChatLeaveRequest subBuilder = new global::ChatServer.Transmissions.ChatLeaveRequest();
+            if (requestCase_ == RequestOneofCase.ChatLeaveRequest) {
+              subBuilder.MergeFrom(ChatLeaveRequest);
+            }
+            input.ReadMessage(subBuilder);
+            ChatLeaveRequest = subBuilder;
+            break;
+          }
+          case 34: {
+            global::ChatServer.Transmissions.NameChangeRequest subBuilder = new global::ChatServer.Transmissions.NameChangeRequest();
+            if (requestCase_ == RequestOneofCase.NameChangeRequest) {
+              subBuilder.MergeFrom(NameChangeRequest);
+            }
+            input.ReadMessage(subBuilder);
+            NameChangeRequest = subBuilder;
             break;
           }
         }
@@ -237,12 +373,39 @@ namespace ChatServer.Transmissions {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            global::ChatServer.Transmissions.JoinRequest subBuilder = new global::ChatServer.Transmissions.JoinRequest();
-            if (requestCase_ == RequestOneofCase.JoinRequest) {
-              subBuilder.MergeFrom(JoinRequest);
+            global::ChatServer.Transmissions.ServerJoinRequest subBuilder = new global::ChatServer.Transmissions.ServerJoinRequest();
+            if (requestCase_ == RequestOneofCase.ServerJoinRequest) {
+              subBuilder.MergeFrom(ServerJoinRequest);
             }
             input.ReadMessage(subBuilder);
-            JoinRequest = subBuilder;
+            ServerJoinRequest = subBuilder;
+            break;
+          }
+          case 18: {
+            global::ChatServer.Transmissions.ChatJoinRequest subBuilder = new global::ChatServer.Transmissions.ChatJoinRequest();
+            if (requestCase_ == RequestOneofCase.ChatJoinRequest) {
+              subBuilder.MergeFrom(ChatJoinRequest);
+            }
+            input.ReadMessage(subBuilder);
+            ChatJoinRequest = subBuilder;
+            break;
+          }
+          case 26: {
+            global::ChatServer.Transmissions.ChatLeaveRequest subBuilder = new global::ChatServer.Transmissions.ChatLeaveRequest();
+            if (requestCase_ == RequestOneofCase.ChatLeaveRequest) {
+              subBuilder.MergeFrom(ChatLeaveRequest);
+            }
+            input.ReadMessage(subBuilder);
+            ChatLeaveRequest = subBuilder;
+            break;
+          }
+          case 34: {
+            global::ChatServer.Transmissions.NameChangeRequest subBuilder = new global::ChatServer.Transmissions.NameChangeRequest();
+            if (requestCase_ == RequestOneofCase.NameChangeRequest) {
+              subBuilder.MergeFrom(NameChangeRequest);
+            }
+            input.ReadMessage(subBuilder);
+            NameChangeRequest = subBuilder;
             break;
           }
         }
